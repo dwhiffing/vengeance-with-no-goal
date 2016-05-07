@@ -1,13 +1,13 @@
 import Enemy from './enemy'
 import Player from './player'
 
-let playerPositions = [0,1,2]
-let enemyPositions = [0,1,2,3,4]
+let playerCount = [0,1,2]
+let enemyCount = [0,1,2,3,4]
 
 let xBuffer = 150
-let enemyXBuffer = 100
 let yBuffer = 150
-let ySpacing = 110
+let enemyXBuffer = 100
+let enemyYBuffer = 100
 
 let entities, enemies, players
 
@@ -18,18 +18,18 @@ export default class EntityManager {
     this.game.entities = []
     this.game.turn = 'player'
 
-    playerPositions.forEach((pos, index) => {
+    playerCount.forEach((pos, index) => {
       let x = xBuffer
-      let y = index % 3 * ySpacing + yBuffer
+      let y = index % 3 * enemyYBuffer + yBuffer
       let player = new Player(game, x, y, index)
       this.game.entities.push(player)
     })
 
-    enemyPositions.forEach((pos, index) => {
+    enemyCount.forEach((pos, index) => {
       const x2 = game.width - enemyXBuffer
       let x = index < 3 ? x2 - enemyXBuffer * 1.5 : x2
-      let y1 = index % 3 * ySpacing + yBuffer
-      let y = index < 3 ? y1 : y1 + ySpacing/2
+      let y1 = index % 3 * enemyYBuffer + yBuffer
+      let y = index < 3 ? y1 : y1 + enemyYBuffer/2
       let enemy = new Enemy(game, x, y, game.rnd.integerInRange(0,2))
       this.game.entities.push(enemy)
     })
@@ -62,34 +62,44 @@ export default class EntityManager {
         break
       }
     }
-    this.nextTurn()
+    this._nextTurn()
   }
 
-  nextTurn() {
-    let newTarget
-
+  _getUnitForNextTurn() {
+    let target
     do {
       this.turnIndex++
       if (this.turnIndex > this.game.entities.length - 1) {
         this.turnIndex = 0
       }
-      newTarget = this.game.entities[this.turnIndex]
-    } while (!newTarget.alive)
+      target = this.game.entities[this.turnIndex]
+    } while (!target.alive)
 
+    return target
+  }
+
+  _nextTurn() {
+    const nextToMove = this._getUnitForNextTurn()
+
+    // TODO: determine whose turn it is in a better way
     this.game.turn = this.turnIndex > 2 ? 'enemy' : 'player'
 
     if (this.game.turn === 'player') {
-      this.game.ui.setActionTarget(newTarget)
+      this._performPlayerMove(nextToMove)
     } else {
-      this.performEnemyMove(newTarget)
-      setTimeout(this.nextTurn.bind(this), 500)
+      setTimeout(this._performEnemyMove.bind(this, nextToMove), 500)
     }
   }
 
-  performEnemyMove(target) {
-    this.game.ui.setAttackTarget(target, 0xffff00)
+  _performPlayerMove(player) {
+    this.game.ui.setActionMenuPosition(player)
+  }
+
+  _performEnemyMove(enemy) {
     // TODO: enemy should target thing they are strong against or weak player
-    target.attack(players.filter(p => !!p.alive)[0])
+    let target = players.filter(p => !!p.alive)[0]
+    enemy.attack(target)
+    this._nextTurn()
   }
 
 }
