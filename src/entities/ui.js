@@ -1,3 +1,4 @@
+
 class Button {
   constructor(game, group, x, y, tint) {
     this.sprite = game.add.sprite(x, y, 'ball')
@@ -13,6 +14,7 @@ let buffer = 50
 let entities, enemies, players
 
 export default class UserInterface {
+
   constructor(game) {
     this.game = game
 
@@ -31,11 +33,9 @@ export default class UserInterface {
     this.actionIndicator = new Button(game, this.actionGroup, -buffer, 20, 0xffffff)
     this.actionIndicator.sprite.alpha = 0.5
 
-    this.targetIndex = 0
-    this.targetIndicator = new Button(game, null, -buffer, 20, 0xffffff)
-    this.targetIndicator.sprite.alpha = 0.5
-    this.targetIndicator.x = entities[0].sprite.x
-    this.targetIndicator.y = entities[0].sprite.y
+    this.attackIndex = 0
+    this.attackIndicator = new Button(game, null, -buffer, 20, 0xffffff)
+    this.setAttackTarget()
 
     this.leftKey = game.input.keyboard.addKey(Phaser.Keyboard.LEFT)
     this.rightKey = game.input.keyboard.addKey(Phaser.Keyboard.RIGHT)
@@ -43,6 +43,7 @@ export default class UserInterface {
     this.downKey = game.input.keyboard.addKey(Phaser.Keyboard.DOWN)
     this.spaceKey = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR)
   }
+
   update() {
     if (this.leftKey.isDown) {
       this.move(-1)
@@ -51,20 +52,22 @@ export default class UserInterface {
       this.move(1)
     }
     if (this.spaceKey.isDown) {
-      this.doAction()
+      this.doSelectedAction()
     }
   }
+
   move(amount) {
     if (this.justMoved) return
 
-    this.mode === 0 ? this.moveActionMenu(amount) : this.moveTarget(amount)
+    this.mode === 0 ? this.moveActionIndex(amount) : this.moveAttackIndex(amount)
 
     this.justMoved = true
     setTimeout(() => {
       this.justMoved = false
     }, 150)
   }
-  moveActionMenu(amount) {
+
+  moveActionIndex(amount) {
     this.actionIndex += amount
 
     if (this.actionIndex < 0) {
@@ -75,65 +78,75 @@ export default class UserInterface {
     }
     this.actionIndicator.sprite.x = this.actionIndex * buffer - buffer
   }
-  moveTarget(amount) {
+
+  moveAttackIndex(amount) {
     let target
     do {
-      this.targetIndex += amount
-      if (this.targetIndex < 0) {
-        this.targetIndex = enemies.length - 1
+      this.attackIndex += amount
+      if (this.attackIndex < 0) {
+        this.attackIndex = enemies.length - 1
       }
-      if (this.targetIndex > enemies.length - 1) {
-        this.targetIndex = 0
+      if (this.attackIndex > enemies.length - 1) {
+        this.attackIndex = 0
       }
-      target = enemies[this.targetIndex]
+      target = enemies[this.attackIndex]
     } while (!target.alive)
 
-
-    this.targetIndicator.sprite.x = target.sprite.x
-    this.targetIndicator.sprite.y = target.sprite.y
+    this.attackIndicator.sprite.x = target.sprite.x
+    this.attackIndicator.sprite.y = target.sprite.y
   }
+
   setActionTarget(target) {
     this.actionGroup.alpha = 1
     this.actionGroup.x = target.sprite.x
     this.actionGroup.y = target.sprite.y - 100
-    this.targetIndicator.sprite.alpha = 0
+    this.attackIndicator.sprite.alpha = 0
   }
-  switchMode() {
+
+  setAttackTarget(target) {
+    if (!target) {
+      this.attackIndex = 1
+      this.moveAttackIndex(-1)
+      target = enemies[this.attackIndex]
+    }
+    this.attackIndicator.sprite.alpha = 0.5
+    this.attackIndicator.sprite.tint = 0xffffff
+    this.attackIndicator.sprite.x = target.sprite.x
+    this.attackIndicator.sprite.y = target.sprite.y
+  }
+
+  togglePlayerEnemyMode() {
     if (this.mode === 0) {
       this.mode = 1
-      this.targetIndex = 1
-      this.moveTarget(-1)
-      let target = enemies[this.targetIndex]
-      this.targetIndicator.sprite.x = target.sprite.x
-      this.targetIndicator.sprite.y = target.sprite.y
-      this.targetIndicator.sprite.tint = 0xffffff
       this.actionGroup.alpha = 0
-      this.targetIndicator.sprite.alpha = 0.5
+      this.setAttackTarget()
     } else {
       this.mode = 0
       this.actionGroup.alpha = 1
-      this.targetIndicator.sprite.alpha = 0
-      this.targetIndicator.sprite.tint = 0xffff00
-      let target = enemies[this.targetIndex]
+      this.attackIndicator.sprite.alpha = 0
+      this.attackIndicator.sprite.tint = 0xffff00
+      let target = enemies[this.attackIndex]
       this.game.doAction('attack', target)
     }
   }
+
   performEnemyMove(target) {
     this.actionGroup.alpha = 0
-    this.targetIndicator.sprite.alpha = 0.5
-    this.targetIndicator.sprite.x = target.sprite.x
-    this.targetIndicator.sprite.y = target.sprite.y
+    this.attackIndicator.sprite.alpha = 0.5
+    this.attackIndicator.sprite.x = target.sprite.x
+    this.attackIndicator.sprite.y = target.sprite.y
     target.attack(players.filter(p => !!p.alive)[0])
   }
-  doAction() {
-    if (this.justDidAction) return
+
+  doSelectedAction() {
+    if (this.justDidAction || this.game.phase === 1) return
     this.justDidAction = true
     setTimeout(() => {
       this.justDidAction = false
     }, 150)
     switch (this.actionIndex) {
       case 0:
-        this.switchMode()
+        this.togglePlayerEnemyMode()
         break
       case 1:
         this.game.doAction('defend')

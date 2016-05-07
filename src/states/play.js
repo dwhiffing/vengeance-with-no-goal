@@ -7,6 +7,7 @@ let playerPositions = [0,1,2]
 let enemyPositions = [0,1,2,3,4]
 
 export default {
+  
   create(game) {
     this.game = game
     game.stage.backgroundColor = '#333'
@@ -18,7 +19,7 @@ export default {
 
     this.turnIndex = 0
     this.game.entities = []
-    this.phase = 0
+    this.game.phase = 0
 
     playerPositions.forEach((pos, index) => {
       let x = xBuffer
@@ -44,9 +45,11 @@ export default {
 
     this.game.doAction = this.doAction.bind(this)
   },
+
   update() {
     this.ui.update()
   },
+
   doAction(action, target) {
     let current = this.game.entities[this.turnIndex]
     switch (action) {
@@ -63,6 +66,7 @@ export default {
     }
     this.nextTurn()
   },
+
   nextTurn() {
     let newTarget
 
@@ -74,9 +78,9 @@ export default {
       newTarget = this.game.entities[this.turnIndex]
     } while (!newTarget.alive)
 
-    this.phase = this.turnIndex > 2 ? 1 : 0
+    this.game.phase = this.turnIndex > 2 ? 1 : 0
 
-    if (this.phase === 0) {
+    if (this.game.phase === 0) {
       this.ui.setActionTarget(newTarget)
     } else {
       this.ui.performEnemyMove(newTarget)

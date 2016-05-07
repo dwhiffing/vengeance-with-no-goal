@@ -33,3 +33,12 @@ lose
   player loses when they run out of life on their whole party
 
 player gets fully restored between fights
+
+each class has a defensive ability
+  axe - defend all players
+  sword - chance to counter
+  bow - chance to evade
+
+
+enemies target the player they are strong against, or the player they are least weak against
+unless there is a player that is nearly dead, then they target that player
