@@ -2,17 +2,18 @@ import HealthText from '../entities/text'
 
 let sprites = ['ball', 'square', 'triangle']
 let jobNames = ['sword', 'axe', 'bow']
+let jobColors = [0x22dd22, 0xdd0000, 0x4422dd]
 
 let attackTween, backTween, jumpTween, damageTween
 let ease
 
 export default class Entity {
 
-  constructor(game, x, y, type, job, tint='0xffff00') {
+  constructor(game, x, y, type, job) {
     this.sprite = game.add.sprite(x, y, `${type}-${jobNames[job]}-idle`)
     this.sprite.anchor.setTo(0.5)
-    this.sprite.tint = tint
-    this.tint = tint
+    this.sprite.tint = jobColors[job]
+    this.tint = jobColors[job]
     this.x = x
     this.y = y
 
@@ -52,18 +53,18 @@ export default class Entity {
     this.alreadyTriggered = false
     this.inTimingWindow = false
 
-    const timing = this.type === 'player' ? 1500 : 500
+    const timing = this.type === 'player' ? 1500 : 3000
     let jumpDist = 20
 
     let dist
     let angle = 1
     let damageDelay = 0
     if (this.job === 0) {
-      dist = 50
+      dist = 80
     } else if (this.job === 1) {
-      dist = 100
+      dist = 120
     } else {
-      dist = -50
+      dist = -70
       angle = -1
       damageDelay = 500
     }
@@ -90,7 +91,7 @@ export default class Entity {
         .to({
           x: this.sprite.x - dist * this.facing,
           angle: 0,
-        }, timing/10, ease.Quadratic.Out)
+        }, timing/6, ease.Quadratic.Out)
 
       // prevent player from attacking before tweens end
       backTween.onComplete.add(callback)
@@ -98,30 +99,34 @@ export default class Entity {
     })
     attackTween.start()
 
-    if (this.type === 'player') {
+    setTimeout(() => {
+      this.inTimingWindow = true
+      this.sprite.tint = 0xffffff
+      this.sprite.scale.setTo(1.3)
       setTimeout(() => {
-        this.inTimingWindow = true
-        this.sprite.tint = 0xffffff
-        this.sprite.scale.setTo(1.3)
-        setTimeout(() => {
-          this.sprite.tint = this.tint
-          this.sprite.scale.setTo(1)
-          this.inTimingWindow = false
-        }, timing/8)
-      }, timing/8)
-    }
+        this.sprite.tint = this.tint
+        this.sprite.scale.setTo(1)
+        this.inTimingWindow = false
+      }, timing/6)
+    }, timing/10)
 
     setTimeout(() => {
       target.damage(effectiveness, this.timingAttackTriggered)
     }, timing/6 + damageDelay)
   }
 
-  damage(effectiveness, critical) {
-    let damageAmount = critical ? this.power * 2 : this.power
+  damage(effectiveness, timingAttackTriggered) {
+    let critMulti = 1
+    if (timingAttackTriggered) {
+      critMulti = this.type === 'enemy' ? 2 : 0.3
+    }
+    effectiveness *= critMulti
     effectiveness *= this.isDefending ? 0.3 : 1
-    damageAmount *= effectiveness
 
-    damageAmount = Math.round(damageAmount)
+    let damageAmount = Math.round(this.power * effectiveness)
+
+    let isCritHit = timingAttackTriggered && this.type === 'enemy'
+    this.game.textManager.floatText(this.x, this.y-20, damageAmount, isCritHit)
 
     this.life -= damageAmount
     if (this.life < 0) {
@@ -144,6 +149,8 @@ export default class Entity {
 
     let timing = 250
     let dist, angle
+    let tint = this.tint
+    // vary the tween based on how effective the hit was
     if (effectiveness === 0.5) {
       dist = 10
       angle = 5
@@ -155,13 +162,18 @@ export default class Entity {
       angle = 30
     }
 
-    if (critical) {
+    // just defended
+    if (this.type === 'player' && timingAttackTriggered) {
+      dist = 5
+      angle = 2
+    }
+
+    if (isCritHit) {
       this.game.shake(damageAmount/2, 100)
       dist *= 4
       angle *= 2
+      tint = 0xffffff
     }
-
-    const tint = critical ? 0xffffff : this.tint
 
     attackTween = this.game.add.tween(this.sprite)
       .to({
@@ -229,6 +241,16 @@ export default class Entity {
     const rgb = Phaser.Color.HSLtoRGB(hue, 1, 0.5)
     this.color = Phaser.Color.getColor(rgb.r, rgb.g, rgb.b)
     this.lifeBar.update(this.life, this.color)
+  }
+
+  timingAttackTrigger() {
+    if (this.alreadyTriggered) return
+    this.alreadyTriggered = true
+    if (this.inTimingWindow) {
+      this.timingAttackTriggered = true
+    } else {
+      this.timingAttackTriggered = false
+    }
   }
 
 }

@@ -5,9 +5,9 @@ let playerCount = [0,1,2]
 let enemyCount = [0,1,2,3,4]
 
 let xBuffer = 150
-let yBuffer = 80
+let yBuffer = 100
 let enemyXBuffer = 130
-let enemyYBuffer = 110
+let enemyYBuffer = 100
 
 let entities, enemies, players
 
