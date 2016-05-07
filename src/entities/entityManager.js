@@ -27,7 +27,7 @@ export default class EntityManager {
 
     enemyCount.forEach((pos, index) => {
       const x2 = game.width - enemyXBuffer
-      let x = index < 3 ? x2 - enemyXBuffer * 1.5 : x2
+      let x = index < 3 ? x2 - enemyXBuffer * 1.8 : x2
       let y1 = index % 3 * enemyYBuffer + yBuffer
       let y = index < 3 ? y1 : y1 + enemyYBuffer/2
       let enemy = new Enemy(game, x, y, game.rnd.integerInRange(0,2))

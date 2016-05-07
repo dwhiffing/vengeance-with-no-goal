@@ -4,15 +4,19 @@ export default class ParticleManager {
     emitter = game.add.emitter(0, 0)
     emitter.makeParticles('bit')
     emitter.minParticleScale = 0.2
-    emitter.maxParticleScale = 1
+    emitter.maxParticleScale = 0.7
     emitter.setRotation(200, 600)
-    emitter.setXSpeed(-300, 300)
-    emitter.setYSpeed(-400, 100)
-    emitter.gravity = 100
+    emitter.setYSpeed(-300, -100)
+    emitter.gravity = 500
   }
-  burst(x, y, tint) {
+  burst(x, y, tint, direction=1) {
     emitter.x = x
     emitter.y = y
+    if (direction === 0) {
+      emitter.setXSpeed(-200, 200)
+    } else {
+      emitter.setXSpeed(-100 * direction, -400 * direction)
+    }
     emitter.forEach(particle => {
       particle.tint = tint
     })
