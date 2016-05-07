@@ -1,4 +1,4 @@
-import LifeBar from '../entities/bar'
+import HealthText from '../entities/text'
 
 let sprites = ['ball', 'square', 'triangle']
 let jobNames = ['sword', 'axe', 'bow']
@@ -9,7 +9,7 @@ let ease
 export default class Entity {
 
   constructor(game, x, y, type, job, tint='0xffff00') {
-    this.sprite = game.add.sprite(x, y, sprites[job])
+    this.sprite = game.add.sprite(x, y, `${type}-${jobNames[job]}-idle`)
     this.sprite.anchor.setTo(0.5)
     this.sprite.tint = tint
     this.tint = tint
@@ -23,7 +23,8 @@ export default class Entity {
     this.job = job
     this.jobName = jobNames[job]
     this.maxLife = 100
-    this.power = type === 'player' ? 10 : 5
+
+    this.power = type === 'player' ? 5 : 10
     this.facing = type === 'player' ? 1 : -1
     this.alive = true
 
@@ -31,8 +32,17 @@ export default class Entity {
     this.weakAgainst = this.job - 1 < 0 ? 2 : this.job - 1
 
     this.life = this.maxLife
-    this.lifeBarWidth = this.sprite.width
-    this.lifeBar = new LifeBar(game, this.sprite.x, this.sprite.y - this.sprite.height, this.lifeBarWidth, this.life)
+    this.lifeBarWidth = this.sprite.width/4
+    let lifeBarY = this.sprite.y + this.sprite.height*0.2
+    let lifeBarX = this.sprite.x-this.facing*60 - (this.type === 'player' ? 70 : 0)
+    if (this.type === 'player') {
+      lifeBarX -= this.job === 1 ? 20 : 0
+      lifeBarX -= this.job === 2 ? -20 : 0
+    }
+    this.lifeBar = new HealthText(game,
+      lifeBarX, lifeBarY, this.life
+    )
+
     this.updateLifeBar()
   }
 
@@ -111,12 +121,14 @@ export default class Entity {
     effectiveness *= this.isDefending ? 0.3 : 1
     damageAmount *= effectiveness
 
+    damageAmount = Math.round(damageAmount)
+
     this.life -= damageAmount
     if (this.life < 0) {
       this.alive = false
       this.life = 0
     }
-    this.updateLifeBar()
+    this.updateLifeBar(this.life)
 
     let particleAmount = effectiveness
 
@@ -181,7 +193,7 @@ export default class Entity {
       this.sprite.alpha = 0
       this.lifeBar.kill()
       this.game.particleManager.burst(
-        this.sprite.x, this.sprite.y, this.sprite.tint, 0
+        this.sprite.x, this.sprite.y, this.sprite.tint, 0, 3, 5000
       )
       this.game.entityManager.triggerWinLoseCondition()
     })

@@ -17,13 +17,13 @@ export default class ParticleManager {
       particle.tint = 0x999999
     })
   }
-  burst(x, y, tint, direction=1, amount) {
-    this.doBurst(burstEmitter, x, y, direction, amount)
+  burst(x, y, tint, direction=1, amount, lifespan) {
+    this.doBurst(burstEmitter, x, y, direction, amount, lifespan)
   }
-  block(x, y, tint, direction=1, amount) {
-    this.doBurst(blockEmitter, x, y, direction, amount)
+  block(x, y, tint, direction=1, amount, lifespan) {
+    this.doBurst(blockEmitter, x, y, direction, amount, lifespan)
   }
-  doBurst(emitter, x, y, direction, amount) {
+  doBurst(emitter, x, y, direction, amount, lifespan=700) {
     emitter.x = x
     emitter.y = y
 
@@ -37,7 +37,6 @@ export default class ParticleManager {
       emitter.maxParticleScale = 0.6
     }
 
-    let lifespan = 700
     let num = Math.floor(10 * amount)
     let speed = 180 * amount
 

@@ -8,11 +8,15 @@ export default {
   create(game) {
     this.game = game
     game.stage.backgroundColor = '#333'
+    this.game.bg = this.game.add.image(0, 0, 'bg')
+    this.game.bg.scale.x = 0.5
+    this.game.bg.scale.y = 0.5
 
     this.game.entityManager = new EntityManager(game)
     this.game.textManager = new TextManager(game)
     this.game.ui = new UserInterface(game)
     this.game.particleManager = new ParticleManager(game)
+
 
     this.game.camera.bounds = null
     this._shakeWorldTime = 0

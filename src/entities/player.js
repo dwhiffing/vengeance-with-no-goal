@@ -20,9 +20,7 @@ export default class Player extends Entity {
   stopDefending() {
     this.isDefending = false
     defenseTween = this.game.add.tween(this.sprite.scale)
-      .to({
-        y: 1,
-      }, 200)
+      .to({ y: 1 }, 200)
     defenseTween.start()
   }
 

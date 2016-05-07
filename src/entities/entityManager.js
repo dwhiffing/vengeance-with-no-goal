@@ -5,10 +5,9 @@ let playerCount = [0,1,2]
 let enemyCount = [0,1,2,3,4]
 
 let xBuffer = 150
-let yBuffer = 150
-let enemyXBuffer = 100
-let enemyYBuffer = 100
-let waveOver = false
+let yBuffer = 80
+let enemyXBuffer = 130
+let enemyYBuffer = 110
 
 let entities, enemies, players
 
@@ -20,7 +19,7 @@ export default class EntityManager {
     this.game.turn = 'player'
 
     playerCount.forEach((pos, index) => {
-      let x = xBuffer
+      let x = index === 1 ? xBuffer + 60 : xBuffer
       let y = index % 3 * enemyYBuffer + yBuffer
       let player = new Player(game, x, y, index)
       this.game.entities.push(player)
@@ -28,7 +27,7 @@ export default class EntityManager {
 
     enemyCount.forEach((pos, index) => {
       const x2 = game.width - enemyXBuffer
-      let x = index < 3 ? x2 - enemyXBuffer * 1.8 : x2
+      let x = index < 3 ? x2 - enemyXBuffer * 1.5 : x2
       let y1 = index % 3 * enemyYBuffer + yBuffer
       let y = index < 3 ? y1 : y1 + enemyYBuffer/2
       let enemy = new Enemy(game, x, y, game.rnd.integerInRange(0,2))

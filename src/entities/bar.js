@@ -15,6 +15,9 @@ export default class AmountBar {
     this.bar.x = this.x - this.bar.width/2
     this.sprite.x = this.x - this.bar.width/2
 
+    this.bar.scale.y = 0.3
+    this.sprite.scale.y = 0.3
+
     this.update(amount)
   }
   update(amount, hue) {
