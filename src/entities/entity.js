@@ -1,26 +1,36 @@
 import LifeBar from '../entities/bar'
 
 let sprites = ['ball', 'square', 'triangle']
+let jobNames = ['sword', 'axe', 'bow']
+
+let attackTween, backTween, jumpTween, damageTween
+let ease
 
 export default class Entity {
 
   constructor(game, x, y, type, job, tint='0xffff00') {
-    this.game = game
     this.sprite = game.add.sprite(x, y, sprites[job])
     this.sprite.anchor.setTo(0.5)
+    this.sprite.tint = tint
+
+    ease = Phaser.Easing
+
+    this.game = game
     this.type = type
     this.job = job
-    this.sprite.tint = tint
+    this.jobName = jobNames[job]
     this.maxLife = 100
     this.power = type === 'player' ? 30 : 10
+    this.facing = type === 'player' ? 1 : -1
+    this.alive = true
+
     this.life = this.maxLife
     this.lifeBarWidth = this.sprite.width
     this.lifeBar = new LifeBar(game, this.sprite.x, this.sprite.y - this.sprite.height, this.lifeBarWidth, this.life)
     this.updateLifeBar()
-    this.alive = true
   }
 
-  attack(target) {
+  attack(target, callback=()=>{}) {
     if (!this.sprite.alive || !target.sprite.alive) return
     let damageMultiplier = 1
     let nextJob = this.job + 1 > 2 ? 0 : this.job + 1
@@ -30,8 +40,30 @@ export default class Entity {
     } else if (prevJob === target.job) {
       damageMultiplier = 0.5
     }
+
     const damage = this.power * damageMultiplier
-    target.damage(damage)
+
+    const timing = 900
+    const dist = 120
+
+    jumpTween = this.game.add.tween(this.sprite)
+      .to({ y: this.sprite.y - dist/4}, timing/15)
+      .yoyo(true)
+      .start()
+
+    attackTween = this.game.add.tween(this.sprite)
+      .to({ x: this.sprite.x + dist * this.facing}, timing, ease.Elastic.Out)
+    attackTween.onComplete.add(() => {
+      backTween = this.game.add.tween(this.sprite)
+        .to({ x: this.sprite.x - dist * this.facing }, timing/2, ease.Quadratic.Out)
+        .start()
+    })
+    attackTween.start()
+
+    setTimeout(() => {
+      target.damage(damage)
+      callback()
+    }, timing/4)
   }
 
   damage(amount=0) {
@@ -43,6 +75,21 @@ export default class Entity {
     if (this.life === 0) {
       this.kill()
     }
+
+    const timing = 250
+    const dist = 20
+
+    this.game.particleManager.burst(this.sprite.x, this.sprite.y, this.sprite.tint)
+
+    // jumpTween = this.game.add.tween(this.sprite)
+    //   .to({ y: this.sprite.y - dist}, timing, ease.Bounce.InOut)
+    //   .yoyo(true)
+    //   .start()
+
+    attackTween = this.game.add.tween(this.sprite)
+      .to({ tint: 0xffffff, x: this.sprite.x - dist * this.facing}, timing, ease.Bounce.Out)
+      .yoyo(true, timing)
+    attackTween.start()
   }
 
   kill() {

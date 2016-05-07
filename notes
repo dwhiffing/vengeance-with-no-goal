@@ -53,3 +53,6 @@ title ideas
   -> trust the invaders <-
   vengeance without a goal
   butcher of infinity
+
+
+should replace all timeout calls with phaser timers/events to prevent weirdness while paused

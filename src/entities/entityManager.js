@@ -52,7 +52,7 @@ export default class EntityManager {
     let current = this.game.entities[this.turnIndex]
     switch (action) {
       case 'attack': {
-        current.attack(target)
+        current.attack(target, this._nextTurn.bind(this))
         break
       }
       case 'defend': {
@@ -62,7 +62,6 @@ export default class EntityManager {
         break
       }
     }
-    this._nextTurn()
   }
 
   _getUnitForNextTurn() {
@@ -87,6 +86,7 @@ export default class EntityManager {
     if (this.game.turn === 'player') {
       this._performPlayerMove(nextToMove)
     } else {
+      this.game.ui.hideTarget()
       setTimeout(this._performEnemyMove.bind(this, nextToMove), 500)
     }
   }
@@ -97,9 +97,7 @@ export default class EntityManager {
 
   _performEnemyMove(enemy) {
     // TODO: enemy should target thing they are strong against or weak player
-    let target = players.filter(p => !!p.alive)[0]
-    enemy.attack(target)
-    this._nextTurn()
+    enemy.attackBestTarget(players, this._nextTurn.bind(this))
   }
 
 }

@@ -10,6 +10,7 @@ class Dot {
   }
 }
 
+let actions = ['attack', 'defend', 'relic']
 let buffer = 50, uiMode
 let entities, enemies, players
 let actionGroup, actionDot, actionIndex, attackDot, attackIndex
@@ -47,6 +48,8 @@ export default class UserInterface {
 
     attackIndex = 0
     attackDot = new Dot(game, null, -buffer, 20, 0xffffff)
+    attackDot.sprite.scale.setTo(1.5)
+    attackDot.sprite.anchor.setTo(0.5)
 
     this.setAttackTarget()
     this.setActionMenuPosition()
@@ -85,6 +88,7 @@ export default class UserInterface {
     actionIndex += amount
     actionIndex = loop(actionIndex, 0, 2)
     actionDot.sprite.x = actionIndex * buffer - buffer
+    this.game.textManager.display(actions[actionIndex])
   }
 
   moveAttackIndex(amount) {
@@ -97,6 +101,8 @@ export default class UserInterface {
 
     attackDot.sprite.x = target.sprite.x
     attackDot.sprite.y = target.sprite.y
+
+    this.game.textManager.display(`attack ${target.jobName} enemy`)
   }
 
   setActionMenuPosition(target) {
@@ -109,6 +115,7 @@ export default class UserInterface {
     actionGroup.x = target.sprite.x
     actionGroup.y = target.sprite.y - 100
     attackDot.sprite.alpha = 0
+    this.game.textManager.display(actions[actionIndex])
   }
 
   setAttackTarget(target, tint=0xffffff) {
@@ -118,7 +125,7 @@ export default class UserInterface {
       target = enemies[attackIndex]
     }
     actionGroup.alpha = 0
-    this.setSprite(attackDot, target.sprite.x, target.sprite.y, tint, 0.5)
+    this.setSprite(attackDot, target.sprite.x, target.sprite.y, tint, 0.3)
   }
 
   setSprite(thing, x, y, tint, alpha) {
@@ -128,6 +135,10 @@ export default class UserInterface {
     thing.sprite.alpha = alpha
   }
 
+  hideTarget() {
+    attackDot.sprite.alpha = 0
+  }
+
   toggleAttackMode() {
     if (uiMode === 'action') {
       uiMode = 'target'
@@ -135,7 +146,7 @@ export default class UserInterface {
       this.setAttackTarget()
     } else {
       uiMode = 'action'
-      this.game.doAction('action', enemies[attackIndex])
+      this.game.doAction('attack', enemies[attackIndex])
     }
   }
 
