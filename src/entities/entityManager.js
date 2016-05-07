@@ -53,6 +53,10 @@ export default class EntityManager {
     let current = this.game.entities[this.turnIndex]
     if (!current) return
     switch (action) {
+      case 'timing': {
+        current.timingAttackTrigger && current.timingAttackTrigger()
+        break
+      }
       case 'attack': {
         current.attack(target, this._nextTurn.bind(this))
         break
@@ -97,7 +101,7 @@ export default class EntityManager {
   }
 
   nextWave() {
-    this.game.ui.allowInput = true
+    this.game.ui.allowAction = true
     enemies.forEach((enemy) => {
       enemy.job = this.game.rnd.integerInRange(0,2)
       enemy.spawn()

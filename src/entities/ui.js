@@ -62,19 +62,16 @@ export default class UserInterface {
 
     leftKey.onDown.add(this.move.bind(this, -1))
     rightKey.onDown.add(this.move.bind(this, 1))
-    spaceKey.onDown.add(this.doSelectedAction.bind(this))
+    spaceKey.onDown.add(this.hitSpace.bind(this))
   }
 
   update() {
-    // if (leftKey.isDown) {
-    //   this.move(-1)
-    // }
-    // if (rightKey.isDown) {
-    //   this.move(1)
-    // }
-    // if (spaceKey.isDown) {
-    //   this.doSelectedAction()
-    // }
+  }
+
+  hitSpace() {
+    this.allowAction ?
+      this.doSelectedAction() :
+      this.game.doAction('timing')
   }
 
   move(amount) {
@@ -114,7 +111,7 @@ export default class UserInterface {
     actionGroup.x = target.x
     actionGroup.y = target.y - 100
     attackDot.sprite.alpha = 0
-    this.allowInput = true
+    this.allowAction = true
     this.game.textManager.display(actions[actionIndex])
   }
 
@@ -125,7 +122,7 @@ export default class UserInterface {
       target = enemies[attackIndex]
     }
     actionGroup.alpha = 0
-    this.allowInput = true
+    this.allowAction = true
     this.setSprite(attackDot, target.sprite.x, target.sprite.y, tint, 0.3)
   }
 
@@ -160,10 +157,10 @@ export default class UserInterface {
   }
 
   doSelectedAction() {
-    if (!this.allowInput || this.game.turn === 'enemy') return
+    if (!this.allowAction || this.game.turn === 'enemy') return
     switch (actionIndex) {
       case 0:
-        this.allowInput = false
+        this.allowAction = false
         this.toggleAttackMode()
         break
       case 1:

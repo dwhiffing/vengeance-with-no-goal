@@ -13,10 +13,27 @@ export default {
     this.game.textManager = new TextManager(game)
     this.game.ui = new UserInterface(game)
     this.game.particleManager = new ParticleManager(game)
+
+    this.game.camera.bounds = null
+    this._shakeWorldTime = 0
+    this._shakeWorldMax = 20
+    this.game.shake = (duration, strength) => {
+      this._shakeWorldTime = duration || 20;
+      this._shakeWorldMax = strength || 20;
+    }
   },
 
   update() {
     this.game.ui.update()
     this.game.particleManager.update()
+    if(this._shakeWorldTime > 0) {
+      var magnitude = (this._shakeWorldTime / this._shakeWorldMax) * this._shakeWorldMax;
+      var x = this.game.rnd.integerInRange(-magnitude, magnitude);
+      var y = this.game.rnd.integerInRange(-magnitude, magnitude);
+
+      this.game.camera.x = x;
+      this.game.camera.y = y;
+      this._shakeWorldTime--;
+    }
   },
 }

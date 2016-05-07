@@ -12,6 +12,7 @@ export default class Entity {
     this.sprite = game.add.sprite(x, y, sprites[job])
     this.sprite.anchor.setTo(0.5)
     this.sprite.tint = tint
+    this.tint = tint
     this.x = x
     this.y = y
 
@@ -22,7 +23,7 @@ export default class Entity {
     this.job = job
     this.jobName = jobNames[job]
     this.maxLife = 100
-    this.power = type === 'player' ? 100 : 100
+    this.power = type === 'player' ? 50 : 10
     this.facing = type === 'player' ? 1 : -1
     this.alive = true
 
@@ -45,20 +46,35 @@ export default class Entity {
       damageMultiplier = 0.5
     }
 
-    const damage = this.power * damageMultiplier
+    this.timingAttackTriggered = false
+    this.alreadyTriggered = false
+    this.inTimingWindow = false
 
-    const timing = 400
-    const dist = 100
+    let damage = this.power * damageMultiplier
+
+    const timing = this.type === 'player' ? 1500 : 300
+    let jumpDist = 20
+
+    let dist
+    let angle = 1
+    if (this.job === 0) {
+      dist = 50
+    } else if (this.job === 1) {
+      dist = 100
+    } else {
+      dist = -50
+      angle = -1
+    }
 
     jumpTween = this.game.add.tween(this.sprite)
-      .to({ y: this.sprite.y - dist/4}, timing/15)
+      .to({ y: this.sprite.y - jumpDist}, timing/15)
       .yoyo(true)
       .start()
 
     attackTween = this.game.add.tween(this.sprite)
       .to({
         x: this.sprite.x + dist * this.facing,
-        angle: 20 * this.facing,
+        angle: 20 * this.facing * angle,
       }, timing, ease.Elastic.Out)
     attackTween.onComplete.add(() => {
       backTween = this.game.add.tween(this.sprite)
@@ -73,16 +89,28 @@ export default class Entity {
     })
     attackTween.start()
 
-    setTimeout(() => {
-      target.damage(damage)
+    if (this.type === 'player') {
+      setTimeout(() => {
+        this.inTimingWindow = true
+        this.sprite.tint = 0xffffff
+        this.sprite.scale.setTo(1.3)
+        setTimeout(() => {
+          this.sprite.tint = this.tint
+          this.sprite.scale.setTo(1)
+          this.inTimingWindow = false
+        }, timing/8)
+      }, timing/8)
+    }
 
-      // allow player to attack before tweens end
-      // setTimeout(callback, 200)
-    }, timing/8)
+    setTimeout(() => {
+      target.damage(damage, this.timingAttackTriggered)
+    }, timing/4)
   }
 
-  damage(amount=0) {
-    this.life -= amount
+  damage(amount=0, critical) {
+    const damageAmount = critical ? amount * 2 : amount
+
+    this.life -= damageAmount
     if (this.life < 0) {
       this.alive = false
       this.life = 0
@@ -93,16 +121,22 @@ export default class Entity {
       this.sprite.x, this.sprite.y, this.sprite.tint, this.facing
     )
 
+    if (critical) {
+      this.game.shake(30, 100)
+    }
+
     const timing = 250
-    const dist = 50
+    const dist = critical ? 80 : 20
+    const tint = critical ? 0xffffff : this.tint
 
     attackTween = this.game.add.tween(this.sprite)
       .to({
-        tint: 0xffffff,
+        tint: tint,
         x: this.sprite.x - dist * this.facing,
         angle: -20 * this.facing,
       }, timing, ease.Bounce.Out)
       .yoyo(true, timing)
+
     attackTween.onComplete.add(() => {
       if (this.life === 0) {
         this.kill()
