@@ -59,29 +59,28 @@ export default class UserInterface {
     upKey = game.input.keyboard.addKey(Phaser.Keyboard.UP)
     downKey = game.input.keyboard.addKey(Phaser.Keyboard.DOWN)
     spaceKey = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR)
+
+    leftKey.onDown.add(this.move.bind(this, -1))
+    rightKey.onDown.add(this.move.bind(this, 1))
+    spaceKey.onDown.add(this.doSelectedAction.bind(this))
   }
 
   update() {
-    if (leftKey.isDown) {
-      this.move(-1)
-    }
-    if (rightKey.isDown) {
-      this.move(1)
-    }
-    if (spaceKey.isDown) {
-      this.doSelectedAction()
-    }
+    // if (leftKey.isDown) {
+    //   this.move(-1)
+    // }
+    // if (rightKey.isDown) {
+    //   this.move(1)
+    // }
+    // if (spaceKey.isDown) {
+    //   this.doSelectedAction()
+    // }
   }
 
   move(amount) {
-    if (this.justMoved) return
-
     uiMode === 'action' ?
       this.moveActionIndex(amount) :
       this.moveAttackIndex(amount)
-
-    this.justMoved = true
-    setTimeout(() => this.justMoved = false, 150)
   }
 
   moveActionIndex(amount) {
@@ -115,6 +114,7 @@ export default class UserInterface {
     actionGroup.x = target.sprite.x
     actionGroup.y = target.sprite.y - 100
     attackDot.sprite.alpha = 0
+    this.allowInput = true
     this.game.textManager.display(actions[actionIndex])
   }
 
@@ -125,6 +125,7 @@ export default class UserInterface {
       target = enemies[attackIndex]
     }
     actionGroup.alpha = 0
+    this.allowInput = true
     this.setSprite(attackDot, target.sprite.x, target.sprite.y, tint, 0.3)
   }
 
@@ -151,9 +152,8 @@ export default class UserInterface {
   }
 
   doSelectedAction() {
-    if (this.justDidAction || this.game.turn === 'enemy') return
-    this.justDidAction = true
-    setTimeout(() => this.justDidAction = false, 150)
+    if (!this.allowInput || this.game.turn === 'enemy') return
+    this.allowInput = false
     switch (actionIndex) {
       case 0:
         this.toggleAttackMode()

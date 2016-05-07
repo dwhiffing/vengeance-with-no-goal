@@ -20,9 +20,12 @@ export default class Entity {
     this.job = job
     this.jobName = jobNames[job]
     this.maxLife = 100
-    this.power = type === 'player' ? 50 : 10
+    this.power = type === 'player' ? 60 : 10
     this.facing = type === 'player' ? 1 : -1
     this.alive = true
+
+    this.strongAgainst = this.job + 1 > 2 ? 0 : this.job + 1
+    this.weakAgainst = this.job - 1 < 0 ? 2 : this.job - 1
 
     this.life = this.maxLife
     this.lifeBarWidth = this.sprite.width
@@ -33,11 +36,10 @@ export default class Entity {
   attack(target, callback=()=>{}) {
     if (!this.sprite.alive || !target.sprite.alive) return
     let damageMultiplier = 1
-    let nextJob = this.job + 1 > 2 ? 0 : this.job + 1
-    let prevJob = this.job - 1 < 0 ? 2 : this.job - 1
-    if (nextJob === target.job) {
+
+    if (this.strongAgainst === target.job) {
       damageMultiplier = 1.5
-    } else if (prevJob === target.job) {
+    } else if (this.weakAgainst === target.job) {
       damageMultiplier = 0.5
     }
 
@@ -91,7 +93,7 @@ export default class Entity {
       .to({
         tint: 0xffffff,
         x: this.sprite.x - dist * this.facing,
-        angle: 20,
+        angle: -20 * this.facing,
       }, timing, ease.Bounce.Out)
       .yoyo(true, timing)
     attackTween.onComplete.add(() => {
