@@ -3,34 +3,30 @@ after each fight, player gets relics as loot
 during fight, player can attack, defend or use relic
 relics can be used on either players or enemies
 
+
 when a good relic is used on a player or a bad relic is used on an enemy
   player is given negative handicap
 vice versa
   player is given positive handicap
 
+
 handicap is represented via color
   bad -> red -> purple
   good -> blue -> green
 
+
 player will think using positive items on themselves is good
   but is given consequences
 
-handicap is represented thematically as spiritual balance
 
-axe - strength
-sword - consitution
-bow - agility
+axe - strength -> strong: bow, weak: sword
+sword - constitution -> strong: axe, weak: bow
+bow - agility -> strong: sword, weak: axe
+
+axe -> bow -> sword
 
 relics are represented thematically as belonging to the culture of the enemy
 using the relics on them is good, using them on yourself is bad
-
-good ending
-  player realizes they should give relics to enemy and stops attacking to win
-bad ending
-  player keeps making themselves more powerful and kills all the enemies to win
-
-lose
-  player loses when they run out of life on their whole party
 
 player gets fully restored between fights
 
@@ -40,5 +36,20 @@ each class has a defensive ability
   bow - chance to evade
 
 
-enemies target the player they are strong against, or the player they are least weak against
-unless there is a player that is nearly dead, then they target that player
+enemy ai
+  enemies target the player they are strong against, or the player they are least weak against
+  unless there is a player that is nearly dead, then they target that player
+
+
+handicap is represented thematically as spiritual balance
+  good ending
+    player realizes they should give relics to enemy and stops attacking to win
+  bad ending
+    player keeps making themselves more powerful and kills all the enemies to win
+  lose
+    player loses when they run out of life on their whole party
+
+title ideas
+  -> trust the invaders <-
+  vengeance without a goal
+  butcher of infinity

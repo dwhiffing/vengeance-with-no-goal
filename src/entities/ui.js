@@ -13,6 +13,15 @@ class Button {
 let buffer = 50
 let entities, enemies, players
 
+const loop = (val, min, max) => {
+  if (val < min) {
+    return max
+  } else if (val > max) {
+    return min
+  }
+  return val
+}
+
 export default class UserInterface {
 
   constructor(game) {
@@ -35,7 +44,9 @@ export default class UserInterface {
 
     this.attackIndex = 0
     this.attackIndicator = new Button(game, null, -buffer, 20, 0xffffff)
+
     this.setAttackTarget()
+    this.setActionTarget()
 
     this.leftKey = game.input.keyboard.addKey(Phaser.Keyboard.LEFT)
     this.rightKey = game.input.keyboard.addKey(Phaser.Keyboard.RIGHT)
@@ -69,13 +80,7 @@ export default class UserInterface {
 
   moveActionIndex(amount) {
     this.actionIndex += amount
-
-    if (this.actionIndex < 0) {
-      this.actionIndex = 0
-    }
-    if (this.actionIndex > 2) {
-      this.actionIndex = 2
-    }
+    this.actionIndex = loop(this.actionIndex, 0, 2)
     this.actionIndicator.sprite.x = this.actionIndex * buffer - buffer
   }
 
@@ -83,12 +88,7 @@ export default class UserInterface {
     let target
     do {
       this.attackIndex += amount
-      if (this.attackIndex < 0) {
-        this.attackIndex = enemies.length - 1
-      }
-      if (this.attackIndex > enemies.length - 1) {
-        this.attackIndex = 0
-      }
+      this.attackIndex = loop(this.attackIndex, 0, enemies.length - 1)
       target = enemies[this.attackIndex]
     } while (!target.alive)
 
@@ -97,20 +97,26 @@ export default class UserInterface {
   }
 
   setActionTarget(target) {
+    if (!target) {
+      this.actionIndex = 1
+      this.moveActionIndex(-1)
+      target = players[this.actionIndex]
+    }
     this.actionGroup.alpha = 1
     this.actionGroup.x = target.sprite.x
     this.actionGroup.y = target.sprite.y - 100
     this.attackIndicator.sprite.alpha = 0
   }
 
-  setAttackTarget(target) {
+  setAttackTarget(target, tint=0xffffff) {
     if (!target) {
       this.attackIndex = 1
       this.moveAttackIndex(-1)
       target = enemies[this.attackIndex]
     }
+    this.actionGroup.alpha = 0
     this.attackIndicator.sprite.alpha = 0.5
-    this.attackIndicator.sprite.tint = 0xffffff
+    this.attackIndicator.sprite.tint = tint
     this.attackIndicator.sprite.x = target.sprite.x
     this.attackIndicator.sprite.y = target.sprite.y
   }
@@ -123,27 +129,14 @@ export default class UserInterface {
     } else {
       this.mode = 0
       this.actionGroup.alpha = 1
-      this.attackIndicator.sprite.alpha = 0
-      this.attackIndicator.sprite.tint = 0xffff00
-      let target = enemies[this.attackIndex]
-      this.game.doAction('attack', target)
+      this.game.doAction('attack', enemies[this.attackIndex])
     }
   }
 
-  performEnemyMove(target) {
-    this.actionGroup.alpha = 0
-    this.attackIndicator.sprite.alpha = 0.5
-    this.attackIndicator.sprite.x = target.sprite.x
-    this.attackIndicator.sprite.y = target.sprite.y
-    target.attack(players.filter(p => !!p.alive)[0])
-  }
-
   doSelectedAction() {
-    if (this.justDidAction || this.game.phase === 1) return
+    if (this.justDidAction || this.game.turn === 'enemy') return
     this.justDidAction = true
-    setTimeout(() => {
-      this.justDidAction = false
-    }, 150)
+    setTimeout(() => this.justDidAction = false, 150)
     switch (this.actionIndex) {
       case 0:
         this.togglePlayerEnemyMode()

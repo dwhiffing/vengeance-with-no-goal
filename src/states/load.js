@@ -10,6 +10,8 @@ export default {
     this.load.audio('dead', 'audio/dead.mp3')
 
     this.load.image('ball', 'images/ball.png')
+    this.load.image('square', 'images/square.png')
+    this.load.image('triangle', 'images/triangle.png')
     this.load.image('box', 'images/box.png')
     this.load.image('marker', 'images/marker.png')
     this.load.image('bit', 'images/bit.png')

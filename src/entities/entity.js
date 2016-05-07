@@ -1,26 +1,36 @@
 import LifeBar from '../entities/bar'
 
+let sprites = ['ball', 'square', 'triangle']
+
 export default class Entity {
 
-  constructor(game, x, y, type, tint='0xffff00') {
-    this.sprite = game.add.sprite(x, y, 'ball')
+  constructor(game, x, y, type, job, tint='0xffff00') {
+    this.game = game
+    this.sprite = game.add.sprite(x, y, sprites[job])
     this.sprite.anchor.setTo(0.5)
     this.type = type
+    this.job = job
     this.sprite.tint = tint
     this.maxLife = 100
-    this.power = type === 'player' ? 15 : 5
+    this.power = type === 'player' ? 30 : 10
     this.life = this.maxLife
     this.lifeBarWidth = this.sprite.width
     this.lifeBar = new LifeBar(game, this.sprite.x, this.sprite.y - this.sprite.height, this.lifeBarWidth, this.life)
     this.updateLifeBar()
     this.alive = true
-
-    this.game = game
   }
 
   attack(target) {
     if (!this.sprite.alive || !target.sprite.alive) return
-    const damage = this.game.rnd.integerInRange(this.power, this.power * 2)
+    let damageMultiplier = 1
+    let nextJob = this.job + 1 > 2 ? 0 : this.job + 1
+    let prevJob = this.job - 1 < 0 ? 2 : this.job - 1
+    if (nextJob === target.job) {
+      damageMultiplier = 1.5
+    } else if (prevJob === target.job) {
+      damageMultiplier = 0.5
+    }
+    const damage = this.power * damageMultiplier
     target.damage(damage)
   }
 
