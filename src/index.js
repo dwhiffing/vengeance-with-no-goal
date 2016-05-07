@@ -4,7 +4,7 @@ import PlayState from './states/play'
 
 
 (function() {
-  let game = new Phaser.Game(800, 500, Phaser.CANVAS, 'app')
+  let game = new Phaser.Game(773, 435, Phaser.CANVAS, 'app')
 
   game.state.add('boot', BootState)
   game.state.add('load', LoadState)
