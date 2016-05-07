@@ -30,7 +30,11 @@ export default class AmountBar {
     this.sprite.width = this.amount/this.fullAmount * this.bar.width
   }
   kill() {
-    this.sprite.kill()
-    this.bar.kill()
+    this.sprite.alpha = 0
+    this.bar.alpha = 0
+  }
+  spawn() {
+    this.sprite.alpha = 1
+    this.bar.alpha = 1
   }
 }

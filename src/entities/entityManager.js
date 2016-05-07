@@ -8,6 +8,7 @@ let xBuffer = 150
 let yBuffer = 150
 let enemyXBuffer = 100
 let enemyYBuffer = 100
+let waveOver = false
 
 let entities, enemies, players
 
@@ -50,6 +51,7 @@ export default class EntityManager {
 
   doAction(action, target) {
     let current = this.game.entities[this.turnIndex]
+    if (!current) return
     switch (action) {
       case 'attack': {
         current.attack(target, this._nextTurn.bind(this))
@@ -62,6 +64,50 @@ export default class EntityManager {
         break
       }
     }
+  }
+
+  checkWinLoseCondition() {
+    let alivePlayers = players.filter(p => !!p.alive)
+    let aliveEnemies = enemies.filter(p => !!p.alive)
+    if (alivePlayers.length === 0) {
+      this.turnIndex = -1
+      this.game.textManager.display('Game over...')
+      this.game.ui.toggleActionMenu(false)
+    }
+    if (aliveEnemies.length === 0) {
+      this.turnIndex = -1
+      this.game.textManager.display('You win!')
+      this.game.ui.toggleActionMenu(false)
+    }
+  }
+
+  triggerWinLoseCondition() {
+    let alivePlayers = players.filter(p => !!p.alive)
+    let aliveEnemies = enemies.filter(p => !!p.alive)
+    if (alivePlayers.length === 0) {
+      setTimeout(this.triggerGameOver.bind(this), 1500)
+    }
+    if (aliveEnemies.length === 0) {
+      setTimeout(this.nextWave.bind(this), 1500)
+    }
+  }
+
+  triggerGameOver() {
+    this.game.state.start('menu')
+  }
+
+  nextWave() {
+    this.game.ui.allowInput = true
+    enemies.forEach((enemy) => {
+      enemy.job = this.game.rnd.integerInRange(0,2)
+      enemy.spawn()
+      this.game.ui.toggleActionMenu(true)
+      this.game.textManager.clear()
+    })
+    players.forEach((player) => {
+      player.heal()
+    })
+    setTimeout(this._nextTurn.bind(this), 1000)
   }
 
   _getUnitForNextTurn() {
@@ -87,6 +133,7 @@ export default class EntityManager {
       this._performPlayerMove(nextToMove)
     } else {
       this.game.ui.hideTarget()
+      this.game.textManager.clear()
       setTimeout(this._performEnemyMove.bind(this, nextToMove), 500)
     }
   }

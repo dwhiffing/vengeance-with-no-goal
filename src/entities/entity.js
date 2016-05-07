@@ -12,6 +12,8 @@ export default class Entity {
     this.sprite = game.add.sprite(x, y, sprites[job])
     this.sprite.anchor.setTo(0.5)
     this.sprite.tint = tint
+    this.x = x
+    this.y = y
 
     ease = Phaser.Easing
 
@@ -20,7 +22,7 @@ export default class Entity {
     this.job = job
     this.jobName = jobNames[job]
     this.maxLife = 100
-    this.power = type === 'player' ? 60 : 10
+    this.power = type === 'player' ? 100 : 100
     this.facing = type === 'player' ? 1 : -1
     this.alive = true
 
@@ -45,7 +47,7 @@ export default class Entity {
 
     const damage = this.power * damageMultiplier
 
-    const timing = 700
+    const timing = 400
     const dist = 100
 
     jumpTween = this.game.add.tween(this.sprite)
@@ -64,6 +66,8 @@ export default class Entity {
           x: this.sprite.x - dist * this.facing,
           angle: 0,
         }, timing/4, ease.Quadratic.Out)
+
+      // prevent player from attacking before tweens end
       backTween.onComplete.add(callback)
       backTween.start()
     })
@@ -71,7 +75,10 @@ export default class Entity {
 
     setTimeout(() => {
       target.damage(damage)
-    }, timing/6)
+
+      // allow player to attack before tweens end
+      // setTimeout(callback, 200)
+    }, timing/8)
   }
 
   damage(amount=0) {
@@ -105,21 +112,48 @@ export default class Entity {
   }
 
   kill() {
+    this.alive = false
     attackTween = this.game.add.tween(this.sprite.scale)
       .to({
         x: 0.1,
         y: 0.1,
-      }, 1000, ease.Quadratic.Out)
+      }, 500, ease.Quadratic.In)
+
+    this.game.entityManager.checkWinLoseCondition()
 
     attackTween.onComplete.add(() => {
-      this.sprite.kill()
+      this.sprite.alpha = 0
       this.lifeBar.kill()
       this.game.particleManager.burst(
         this.sprite.x, this.sprite.y, this.sprite.tint, 0
       )
+      this.game.entityManager.triggerWinLoseCondition()
     })
 
     attackTween.start()
+  }
+
+  heal() {
+    this.alive = true
+    this.life = this.maxLife
+    this.updateLifeBar()
+    this.lifeBar.spawn()
+  }
+
+  spawn() {
+    attackTween = this.game.add.tween(this.sprite.scale)
+      .to({
+        x: 1,
+        y: 1,
+      }, 1000, ease.Quadratic.Out)
+      .start()
+    backTween = this.game.add.tween(this.sprite)
+      .to({
+        alpha: 1,
+      }, 1000, ease.Quadratic.Out)
+      .start()
+
+    this.heal()
   }
 
   updateLifeBar() {

@@ -1,5 +1,6 @@
 import BootState from './states/boot'
 import LoadState from './states/load'
+import MenuState from './states/menu'
 import PlayState from './states/play'
 
 
@@ -9,5 +10,6 @@ import PlayState from './states/play'
   game.state.add('boot', BootState)
   game.state.add('load', LoadState)
   game.state.add('play', PlayState)
+  game.state.add('menu', MenuState)
   game.state.start('boot')
 })()

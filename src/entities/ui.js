@@ -111,8 +111,8 @@ export default class UserInterface {
       target = players[actionIndex]
     }
     actionGroup.alpha = 1
-    actionGroup.x = target.sprite.x
-    actionGroup.y = target.sprite.y - 100
+    actionGroup.x = target.x
+    actionGroup.y = target.y - 100
     attackDot.sprite.alpha = 0
     this.allowInput = true
     this.game.textManager.display(actions[actionIndex])
@@ -140,6 +140,14 @@ export default class UserInterface {
     attackDot.sprite.alpha = 0
   }
 
+  toggleActionMenu(thing=0) {
+    if (thing === 0) {
+      actionGroup.alpha = actionGroup.alpha === 0 ? 1 : 0
+    } else {
+      actionGroup.alpha = thing ? 1 : 0
+    }
+  }
+
   toggleAttackMode() {
     if (uiMode === 'action') {
       uiMode = 'target'
@@ -153,9 +161,9 @@ export default class UserInterface {
 
   doSelectedAction() {
     if (!this.allowInput || this.game.turn === 'enemy') return
-    this.allowInput = false
     switch (actionIndex) {
       case 0:
+        this.allowInput = false
         this.toggleAttackMode()
         break
       case 1:
