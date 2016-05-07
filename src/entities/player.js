@@ -17,7 +17,6 @@ export default class Player extends Entity {
     if (this.alreadyTriggered) return
     this.alreadyTriggered = true
     if (this.inTimingWindow) {
-      console.log("test")
       this.timingAttackTriggered = true
     } else {
       this.timingAttackTriggered = false
