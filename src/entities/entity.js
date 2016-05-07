@@ -108,6 +108,7 @@ export default class Entity {
 
   damage(effectiveness, critical) {
     let damageAmount = critical ? this.power * 2 : this.power
+    effectiveness *= this.isDefending ? 0.3 : 1
     damageAmount *= effectiveness
 
     this.life -= damageAmount
@@ -119,12 +120,12 @@ export default class Entity {
 
     let particleAmount = effectiveness
 
-    if (effectiveness > 0.5) {
-      this.game.particleManager.burst(
+    if (effectiveness < 1) {
+      this.game.particleManager.block(
         this.sprite.x, this.sprite.y, this.sprite.tint, this.facing, particleAmount
       )
     } else {
-      this.game.particleManager.block(
+      this.game.particleManager.burst(
         this.sprite.x, this.sprite.y, this.sprite.tint, this.facing, particleAmount
       )
     }

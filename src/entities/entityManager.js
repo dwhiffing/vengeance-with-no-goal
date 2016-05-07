@@ -47,6 +47,7 @@ export default class EntityManager {
     players = this.game.players
 
     this.game.doAction = this.doAction.bind(this)
+    this._nextTurn = this._nextTurn.bind(this)
   }
 
   doAction(action, target) {
@@ -58,10 +59,11 @@ export default class EntityManager {
         break
       }
       case 'attack': {
-        current.attack(target, this._nextTurn.bind(this))
+        current.attack(target, this._nextTurn)
         break
       }
       case 'defend': {
+        current.defend(this._nextTurn)
         break
       }
       case 'relic': {
@@ -111,7 +113,7 @@ export default class EntityManager {
     players.forEach((player) => {
       player.heal()
     })
-    setTimeout(this._nextTurn.bind(this), 1000)
+    setTimeout(this._nextTurn, 1000)
   }
 
   _getUnitForNextTurn() {
@@ -144,11 +146,12 @@ export default class EntityManager {
 
   _performPlayerMove(player) {
     this.game.ui.setActionMenuPosition(player)
+    player.stopDefending()
   }
 
   _performEnemyMove(enemy) {
     // TODO: enemy should target thing they are strong against or weak player
-    enemy.attackBestTarget(players, this._nextTurn.bind(this))
+    enemy.attackBestTarget(players, this._nextTurn)
   }
 
 }
