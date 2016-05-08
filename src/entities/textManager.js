@@ -61,8 +61,8 @@ export default class TextManager {
     tween.start()
   }
   floatText(x, y, val, crit, color='#fff') {
-    let fontSize = 20
-    if (fontSize < 20) fontSize = 20
+    let fontSize = val
+    if (fontSize < 15) fontSize = 15
     let bold = ''
     if (crit) {
       bold = 'bold '

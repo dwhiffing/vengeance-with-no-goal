@@ -53,12 +53,15 @@ export default class Entity {
 
     this.lifeBarWidth = this.sprite.width/4
     let lifeBarY = this.sprite.y
-    let lifeBarX = this.sprite.x-this.facing*70 - (this.type === 'player' ? 70 : 0)
 
+    this.lifebarSpacing = 0
     if (this.type === 'player') {
-      lifeBarX -= this.job === 1 ? 20 : 0
-      lifeBarX -= this.job === 2 ? -40 : 0
+      this.lifebarSpacing = 60
+      this.lifebarSpacing += this.job === 1 ? 20 : 0
+      this.lifebarSpacing += this.job === 2 ? -40 : 0
     }
+    let lifeBarX = this.sprite.x-this.facing*70 - this.lifebarSpacing
+
 
     this.lifeBar = new HealthText(game,
       lifeBarX, lifeBarY, this.life
@@ -200,13 +203,14 @@ export default class Entity {
   }
 
   takeDamage(damage=0, effectiveness=1, isCritHit=false) {
-    this.game.textManager.floatText(this.x+(40*this.facing), this.y-50, damage, isCritHit)
+    let spacing = this.type === 'player' ? 60 : 80
+    this.game.textManager.floatText(this.sprite.x-((spacing+this.lifebarSpacing)*this.facing), this.y-50, damage, isCritHit)
     this.life -= damage
     if (this.life < 0) {
       this.alive = false
       this.life = 0
     }
-    this.updateLifeBar(this.life)
+    this.updateLifeBar(true)
 
     // launch particles
     let particleAmount = effectiveness
@@ -347,12 +351,12 @@ export default class Entity {
     this.revive()
   }
 
-  updateLifeBar() {
+  updateLifeBar(animate) {
     const hue = 0.3334 - ((this.maxLife - this.life) / (3 * this.maxLife))
     const rgb = Phaser.Color.HSLtoRGB(hue, 1, 0.5)
     this.color = Phaser.Color.getColor(rgb.r, rgb.g, rgb.b)
     this.lifeBar.fullAmount = this.maxLife
-    this.lifeBar.update(this.life, this.color)
+    this.lifeBar.update(this.life, this.color, animate)
   }
 
   timingAttackTrigger() {

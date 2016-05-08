@@ -88,13 +88,14 @@ export default class Player extends Entity {
     if (this.life > this.maxLife) {
       this.life = this.maxLife
     }
-    this.updateLifeBar()
+    this.updateLifeBar(true)
     defenseTween = this.game.add.tween(this.sprite.scale)
       .to({ x: 0.5, y: 1.5 }, 250)
       .yoyo(true)
     defenseTween.start()
 
-    this.game.textManager.floatText(this.sprite.x+30, this.sprite.y-50, value, false, '#0f0')
+    this.game.textManager.floatText(this.sprite.x-((50+this.lifebarSpacing)*this.facing), this.y-50, value, false, '#0f0')
+
     let lastTint = this.sprite.tint
     this.sprite.tint = 0x00ff00
     setTimeout(() => this.sprite.tint = lastTint, 500)

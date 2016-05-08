@@ -14,11 +14,17 @@ export default class HealthText {
 
     this.update(amount)
   }
-  update(amount, hue) {
+  update(amount, hue, animate) {
     this.amount = amount
     this.text.text = `${this.amount}/${this.fullAmount}`
     if (hue) {
       this.text.tint = hue
+    }
+    if (animate) {
+      let tween = this.game.add.tween(this.text.scale)
+      .to({ x: 1.7, y: 1.7 }, 250, Phaser.Easing.Bounce.Out)
+      .yoyo(true)
+      .start()
     }
   }
   kill() {
