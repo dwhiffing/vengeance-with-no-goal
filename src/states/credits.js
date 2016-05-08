@@ -11,7 +11,7 @@ export default {
     game.stage.backgroundColor = '#000000'
     let x = this.game.world.centerX
     let y = this.game.world.centerY
-    let titleText = game.add.text(x, 50, "Trust the Invaders", getStyle(42, true))
+    let titleText = game.add.text(x, 50, "Vengeance Without a Goal", getStyle(42, true))
     let twins = game.add.text(x, 120, "Art", getStyle(28, true))
     let twins2 = game.add.text(x, 150, "Steph & Sam Braithwaite", getStyle(18))
     let daniel = game.add.text(x, 200, "Coding", getStyle(28, true))

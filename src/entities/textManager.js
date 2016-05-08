@@ -7,7 +7,7 @@ let style = {
 }
 
 let messages = {
-  attack: 'Pick a target enemy to attack',
+  attack: 'Pick a target enemy to attack, hit again on impact for critical',
   defend: 'Enter defense mode, swapping your strengths and weaknesses',
   heal: 'Restore a target ally\'s health',
   boost: 'Counter for target ally if they are attacked this round',

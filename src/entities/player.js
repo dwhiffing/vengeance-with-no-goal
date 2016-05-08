@@ -34,6 +34,7 @@ export default class Player extends Entity {
 
   reset() {
     this.stopDefendingOrAssisting()
+    this.heal(this.maxLife*0.25, false)
   }
 
   pickPlayer(target, action, callback) {
@@ -85,21 +86,24 @@ export default class Player extends Entity {
     }, 20)
   }
 
-  heal(value) {
+  heal(value, animate=true) {
+    if (this.life === this.maxLife) return
     this.life += this.maxLife * (value/100)
     if (this.life > this.maxLife) {
       this.life = this.maxLife
     }
     this.updateLifeBar(true)
-    defenseTween = this.game.add.tween(this.sprite.scale)
-      .to({ x: 0.5, y: 1.5 }, 250)
-      .yoyo(true)
-    defenseTween.start()
 
     this.game.textManager.floatText(this.sprite.x-((50+this.lifebarSpacing)*this.facing), this.y-50, value, false, '#0f0')
 
     let lastTint = this.sprite.tint
     this.game.healSound.play()
+    if (animate) {
+      defenseTween = this.game.add.tween(this.sprite.scale)
+      .to({ x: 0.5, y: 1.5 }, 250)
+      .yoyo(true)
+      defenseTween.start()
+    }
     this.sprite.tint = 0x00ff00
     setTimeout(() => this.sprite.tint = lastTint, 500)
   }

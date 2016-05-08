@@ -41,6 +41,7 @@ export default {
     this.game.ui.setTarget()
     this.game.ui.hideTarget()
     this.game.ui.allowAction = false
+    this.game.textManager.display('')
 
     this.game.camera.bounds = null
     this._shakeWorldTime = 0
