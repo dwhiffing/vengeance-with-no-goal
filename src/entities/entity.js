@@ -54,7 +54,7 @@ export default class Entity {
 
     this.lifeBarWidth = this.sprite.width/4
     let lifeBarY = this.sprite.y
-    let lifeBarX = this.sprite.x-this.facing*60 - (this.type === 'player' ? 70 : 0)
+    let lifeBarX = this.sprite.x-this.facing*70 - (this.type === 'player' ? 70 : 0)
 
     if (this.type === 'player') {
       lifeBarX -= this.job === 1 ? 20 : 0

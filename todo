@@ -1,24 +1,12 @@
 add counter ability
-  move sword infront of target
-  use defend animation
   does damage with both sword and target effectiveness
 add protect ability
-  move melee infront of target
   melee takes all damage
+  takes damage with both melee and target effectiveness
+
 add tweens for heal
   tint green and show green number for health
-add mobile controls
-  arrows on left, select on right
-add shadows?
-allow going back in ui?
-bug: enemies stop idle animation when they respawn
 
-allow selecting of player at beginning of each turn?
-allow cancel?
-move lifebar into group with entity and move group around instead
-
-make window for defense bigger
-improve tweens and refactor them
 enemies should fight in predictable way
   predetermined waves that increase in difficult
   make game more about target choice by always having one of each early on
@@ -27,22 +15,27 @@ different timings for every entity for attack and defense
 add sound effects
   move select, pick select
 
+add tweens for life text going up/down
+
 add rock to top right corner of bg to cover score / wave text
 fix background to have enough space for mobile buttons
   and be dark along the bottom
+less green on red enemy
+less blue on green player
 
-less green on red enemy?
-less blue on green player?
-add tweens for life text going up/down
+add mobile controls
+  arrows on left, select on right
 
-balancing
+allow going back in ui?
+allow selecting of player at beginning of each turn?
+add shadows?
+move lifebar into group with entity and move group around instead?
+make window for defense bigger?
+improve tweens and refactor them?
 
 add title menu
-  buttons for credits, start, and instructions
-add credits menu
-add game over menu
-add high score menu
-add local high scores
-add online high scores
-add instructions?
-add transition between fights?
+  buttons for credits, start
+
+add high score menu?
+  add local high scores
+  add online high scores
