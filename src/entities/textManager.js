@@ -63,6 +63,7 @@ export default class TextManager {
   floatText(x, y, val, crit, color='#fff') {
     let fontSize = val
     if (fontSize < 15) fontSize = 15
+    if (fontSize > 40) fontSize = 40
     let bold = ''
     if (crit) {
       bold = 'bold '

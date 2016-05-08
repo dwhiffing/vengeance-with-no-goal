@@ -105,12 +105,10 @@ export default class Entity {
     let dist
     let angle = 1
     let damageDelay = 0
-    if (this.job === 0) {
-      dist = 80
-    } else if (this.job === 1) {
-      dist = 120
+    if (this.job < 2) {
+      dist = 70
     } else {
-      dist = -70
+      dist = -50
       angle = -1
       damageDelay = 500
     }
@@ -251,8 +249,8 @@ export default class Entity {
       dist = 7
       angle = 5
     } else {
-      dist = 15
-      angle = 20
+      dist = 10
+      angle = 15
     }
 
     // just defended
