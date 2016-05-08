@@ -101,7 +101,7 @@ export default class EntityManager {
   }
 
   triggerGameOver() {
-    this.game.state.start('menu')
+    game.state.start('gameover', true, false, { score: Math.round(this.game.score) })
   }
 
   getWaveSize() {

@@ -29,6 +29,7 @@ export default {
   },
 
   onLoadComplete() {
-    this.game.state.start('play')
+    // TODO: make me menu
+    this.game.state.start('play', true, false, { score: 5000})
   }
 }
