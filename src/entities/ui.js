@@ -13,7 +13,7 @@ class Dot {
 let buffer = 60, uiMode
 let entities, enemies, players, targetting
 let actionGroup, actionDot, actionIndex, targetDot, targetIndex
-let attack, defend, assistButton
+let attack, defend, assistButton, allowAssist
 let leftKey, rightKey, upKey, downKey, spaceKey
 
 let actions = ['attack', 'defend']
@@ -93,18 +93,29 @@ export default class UserInterface {
 
   getActionName() {
     if (actionIndex === 2) {
-      return assist[this.game.nextToMove.job]
+      if (allowAssist) {
+        return assist[this.game.nextToMove.job]
+      } else {
+        return 'No free target to assist'
+      }
     }
     return actions[actionIndex]
   }
 
   moveTargetIndex(amount) {
     let target
+    let nextToMove = this.game.nextToMove || this.game.players[0]
     do {
       targetIndex += amount
       targetIndex = loop(targetIndex, 0, targetting.length - 1)
       target = targetting[targetIndex]
-      target = target === this.game.nextToMove && target.job !== 2 ? null : target
+      if (
+        (target === nextToMove && target.job !== 2) ||
+        (nextToMove.job !== 2 && target.isAssisting)  ||
+        (nextToMove.job !== 2 && target.isAssisted)
+      ) {
+        target = null
+      }
     } while (!target || !target.alive)
 
     targetDot.sprite.x = target.sprite.x
@@ -123,6 +134,17 @@ export default class UserInterface {
     actionGroup.x = target.x
     actionGroup.y = target.y - 120
     targetDot.sprite.alpha = 0
+
+    allowAssist = true
+    let melee = this.game.players[0]
+    let sword = this.game.players[1]
+    if (
+      (this.game.nextToMove === melee && sword.isAssisting) ||
+      (this.game.nextToMove === sword && melee.isAssisting)
+    ) {
+      allowAssist = false
+    }
+    assistButton.sprite.tint = allowAssist ? 0xffffff : 0x222222
     this.allowAction = true
     this.game.textManager.display(this.getActionName())
   }
@@ -166,17 +188,22 @@ export default class UserInterface {
   doSelectedAction() {
     if (!this.allowAction || this.game.turn === 'enemy') return
     switch (actionIndex) {
-      case 0:
+      case 0: {
         this.allowAction = false
         this.toggleTargetMode()
         break
-      case 2:
-        this.allowAction = false
-        this.toggleTargetMode(this.getActionName())
+      }
+      case 2: {
+        if (allowAssist) {
+          this.allowAction = false
+          this.toggleTargetMode(this.getActionName())
+        }
         break
-      default:
+      }
+      default: {
         this.game.doAction(this.getActionName())
         break
+      }
     }
   }
 }

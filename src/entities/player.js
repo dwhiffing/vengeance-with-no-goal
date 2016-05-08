@@ -15,10 +15,11 @@ export default class Player extends Entity {
 
   stopDefendingOrAssisting() {
     let opts = { x: this.x, y: this.y }
-    if (this.isDefending || this.isAssisting) {
+    if (this.isDefending || this.isAssisting || this.isAssisted) {
 
       this.isDefending = false
       this.isAssisting = false
+      this.isAssisted = false
       this.sprite.animations.play('idle')
       this.game.players[0].sprite.z = 0
       this.game.players[1].sprite.z = 1
@@ -59,6 +60,7 @@ export default class Player extends Entity {
     } else if (action === 'protect') {
       this.isAssisting = true
       this.isDefending = true
+      target.isAssisted = true
       this.assistTarget = target
       this.sprite.animations.play('defend')
       this.sprite.z = 10
