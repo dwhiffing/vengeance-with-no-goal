@@ -89,19 +89,20 @@ export default class EntityManager {
   triggerWinLoseCondition() {
     let alivePlayers = players.filter(p => !!p.alive)
     let aliveEnemies = enemies.filter(p => !!p.alive)
-    this.game.ui.toggleActionMenu(false)
     if (alivePlayers.length === 0) {
+      this.game.ui.toggleActionMenu(false)
       this.game.textManager.display('Game over...')
       setTimeout(this.triggerGameOver.bind(this), 1500)
     }
     if (aliveEnemies.length === 0) {
+      this.game.ui.toggleActionMenu(false)
       this.game.textManager.display('You win!')
       setTimeout(this.nextWave.bind(this), 1500)
     }
   }
 
   triggerGameOver() {
-    game.state.start('gameover', true, false, { score: Math.round(this.game.score) })
+    this.game.state.start('gameover', true, false, { score: Math.round(this.game.score) })
   }
 
   getWaveSize() {

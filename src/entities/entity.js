@@ -265,7 +265,9 @@ export default class Entity {
     }
 
     if (isCritHit) {
-      this.game.shake(damageAmount/2, 100)
+      let shakeAmount = damageAmount/2
+      if (shakeAmount > 40) shakeAmount = 40
+      this.game.shake(shakeAmount, 100)
       dist *= 4
       angle *= 2
     }
