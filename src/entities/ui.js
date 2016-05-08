@@ -122,7 +122,9 @@ export default class UserInterface {
     targetDot.sprite.x = target.sprite.x
     targetDot.sprite.y = target.sprite.y
 
-    this.game.textManager.display(`attack ${target.jobName} enemy`)
+    let verb = targetting === this.game.players ? 'Assist' : 'Attack'
+
+    this.game.textManager.display(`${verb} ${target.jobName}`)
   }
 
   setActionMenuPosition(target) {

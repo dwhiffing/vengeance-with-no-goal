@@ -7,11 +7,11 @@ let style = {
 }
 
 let messages = {
-  attack: 'attack a targetted enemy',
-  defend: 'enter defensive posture, swapping your strengths and weaknesses',
-  heal: 'restore a targetted ally\'s health',
-  boost: 'cover an ally\'s weaknesses for this round',
-  protect: 'protect a targetted ally from any attack this round',
+  attack: 'Pick a target enemy to attack',
+  defend: 'Enter defense mode, swapping your strengths and weaknesses',
+  heal: 'Restore a target ally\'s health',
+  boost: 'Counter for target ally if they are attacked this round',
+  protect: 'Protect a target ally from any attack this round',
 }
 
 let tween, tween2

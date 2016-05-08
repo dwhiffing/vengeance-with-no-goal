@@ -1,7 +1,9 @@
 import HealthText from '../entities/text'
 
 let sprites = ['ball', 'square', 'triangle']
-let jobNames = ['sword', 'melee', 'bow']
+let spriteNames = ['sword', 'melee', 'bow']
+let jobNames = ['Elise', 'Tiny', 'Pexom']
+let jobNamesEnemy = ['Batsworth', 'Rit-Rat', 'Flan']
 let jobColors = [0x22dd22, 0xdd0000, 0x4422dd]
 let baseStats = [
   {
@@ -23,7 +25,7 @@ let idleAnim, attackAnim, hitAnim, deadAnim, defendAnim
 export default class Entity {
 
   constructor(game, x, y, type, job) {
-    this.sprite = game.add.sprite(x, y, `${type}-${jobNames[job]}`)
+    this.sprite = game.add.sprite(x, y, `${type}-${spriteNames[job]}`)
     this.sprite.anchor.setTo(0.5, 0.7)
     this.x = this.sprite.x
     this.y = this.sprite.y
@@ -32,7 +34,6 @@ export default class Entity {
     this.game = game
     this.type = type
     this.job = job
-    this.jobName = jobNames[job]
 
     this.setStats()
 
@@ -308,10 +309,11 @@ export default class Entity {
       this.maxLife = Math.round(100 * modifier)
       this.power *= modifier
       this.power = Math.round(this.power)
-      this.sprite.loadTexture(`${this.type}-${jobNames[this.job]}`)
+      this.sprite.loadTexture(`${this.type}-${spriteNames[this.job]}`)
       this.strongAgainst = this.job + 1 > 2 ? 0 : this.job + 1
       this.weakAgainst = this.job - 1 < 0 ? 2 : this.job - 1
     }
+    this.jobName = this.type === 'enemy' ? jobNamesEnemy[this.job] : jobNames[this.job]
     this.life = this.maxLife
   }
 
