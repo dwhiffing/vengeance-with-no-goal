@@ -244,7 +244,7 @@ export default class Entity {
     if (this.type === 'player' && timingAttackTriggered) {
       dist = 5
       angle = 2
-    } else {
+    } else if (!this.isDefending){
       this.sprite.animations.play('hit')
     }
 
@@ -264,7 +264,7 @@ export default class Entity {
     setTimeout(() => {
       if (this.life === 0) {
         this.kill()
-      } else {
+      } else if (!this.isDefending){
         this.idle(0)
       }
     }, 500)

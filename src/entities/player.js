@@ -9,9 +9,7 @@ export default class Player extends Entity {
 
   defend(callback) {
     this.isDefending = true
-    defenseTween = this.game.add.tween(this.sprite.scale)
-      .to({ y: 0.85 }, 200)
-    defenseTween.start()
+    this.sprite.animations.play('defend')
     callback()
   }
 
