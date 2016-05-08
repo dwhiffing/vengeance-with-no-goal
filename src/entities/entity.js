@@ -4,6 +4,22 @@ let sprites = ['ball', 'square', 'triangle']
 let jobNames = ['sword', 'axe', 'bow']
 let jobColors = [0x22dd22, 0xdd0000, 0x4422dd]
 
+let baseStats = [
+  {
+    hp: 120,
+    power: 8,
+    powerVariance: 5,
+  }, {
+    hp: 300,
+    power: 20,
+    powerVariance: 1,
+  }, {
+    hp: 80,
+    power: 12,
+    powerVariance: 10,
+  },
+]
+
 let attackTween, backTween, jumpTween, damageTween
 let ease
 
@@ -14,37 +30,42 @@ export default class Entity {
     this.sprite.anchor.setTo(0.5)
     this.sprite.tint = jobColors[job]
     this.tint = jobColors[job]
-    this.x = x
-    this.y = y
-
+    this.x = this.sprite.x
+    this.y = this.sprite.y
     ease = Phaser.Easing
 
     this.game = game
     this.type = type
     this.job = job
     this.jobName = jobNames[job]
-    this.maxLife = 100
 
-    this.power = type === 'player' ? 5 : 10
+    this.setStats()
+
     this.facing = type === 'player' ? 1 : -1
     this.alive = true
 
     this.strongAgainst = this.job + 1 > 2 ? 0 : this.job + 1
     this.weakAgainst = this.job - 1 < 0 ? 2 : this.job - 1
 
-    this.life = this.maxLife
     this.lifeBarWidth = this.sprite.width/4
     let lifeBarY = this.sprite.y + this.sprite.height*0.2
     let lifeBarX = this.sprite.x-this.facing*60 - (this.type === 'player' ? 70 : 0)
-    if (this.type === 'player') {
-      lifeBarX -= this.job === 1 ? 20 : 0
-      lifeBarX -= this.job === 2 ? -20 : 0
-    }
+
     this.lifeBar = new HealthText(game,
       lifeBarX, lifeBarY, this.life
     )
-
     this.updateLifeBar()
+    this.heal()
+
+    if (this.type === 'player') {
+      lifeBarX -= this.job === 1 ? 20 : 0
+      lifeBarX -= this.job === 2 ? -20 : 0
+    } else {
+      this.alive = false
+      this.sprite.alpha = 0
+      this.lifeBar.kill()
+    }
+
   }
 
   attack(target, callback=()=>{}) {
@@ -53,7 +74,7 @@ export default class Entity {
     this.alreadyTriggered = false
     this.inTimingWindow = false
 
-    const timing = this.type === 'player' ? 1500 : 3000
+    const timing = this.type === 'player' ? 1500 : 1000
     let jumpDist = 20
 
     let dist
@@ -99,6 +120,8 @@ export default class Entity {
     })
     attackTween.start()
 
+    let damage = this.power + this.game.rnd.integerInRange(0, this.powerVariance)
+
     setTimeout(() => {
       this.inTimingWindow = true
       this.sprite.tint = 0xffffff
@@ -107,15 +130,60 @@ export default class Entity {
         this.sprite.tint = this.tint
         this.sprite.scale.setTo(1)
         this.inTimingWindow = false
-      }, timing/6)
-    }, timing/10)
+      }, timing/3)
+    }, timing/14)
 
     setTimeout(() => {
-      target.damage(effectiveness, this.timingAttackTriggered)
+      // various defense modes
+      let meleePlayer = this.game.players.filter(p => p.job === 1)[0]
+      if (this.type === 'enemy' && meleePlayer.alive && meleePlayer.isDefending && target !== meleePlayer) {
+        let old = {x: meleePlayer.sprite.x, y: meleePlayer.sprite.y}
+        meleePlayer.sprite.x = target.sprite.x
+        meleePlayer.sprite.y = target.sprite.y
+        setTimeout(() => {
+          meleePlayer.sprite.x = old.x
+          meleePlayer.sprite.y = old.y
+        }, 500)
+
+        target = meleePlayer
+      }
+      if (target.job === 2 && target.isDefending) {
+        effectiveness = 0
+      }
+      if (target.job === 0 && target.isDefending) {
+        effectiveness *= 0.5
+        this.takeDamage(damage)
+      }
+
+      target.getHit(damage, effectiveness, this.timingAttackTriggered)
     }, timing/6 + damageDelay)
   }
 
-  damage(effectiveness, timingAttackTriggered) {
+  takeDamage(damage=0, effectiveness=1, isCritHit=false) {
+    this.game.textManager.floatText(this.x, this.y-20, damage, isCritHit)
+    this.life -= damage
+    if (this.life < 0) {
+      this.alive = false
+      this.life = 0
+    }
+    this.updateLifeBar(this.life)
+
+    // launch particles
+    let particleAmount = effectiveness
+    if (effectiveness < 1) {
+      this.game.particleManager.block(
+        this.sprite.x, this.sprite.y, this.sprite.tint, this.facing,
+        particleAmount, undefined, this.type === 'enemy'
+      )
+    } else {
+      this.game.particleManager.burst(
+        this.sprite.x, this.sprite.y, this.sprite.tint, this.facing,
+        particleAmount, undefined, this.type === 'enemy'
+      )
+    }
+  }
+
+  getHit(damage, effectiveness, timingAttackTriggered) {
     let critMulti = 1
     if (timingAttackTriggered) {
       critMulti = this.type === 'enemy' ? 2 : 0.3
@@ -123,29 +191,10 @@ export default class Entity {
     effectiveness *= critMulti
     effectiveness *= this.isDefending ? 0.3 : 1
 
-    let damageAmount = Math.round(this.power * effectiveness)
-
+    let damageAmount = Math.round(damage * effectiveness)
     let isCritHit = timingAttackTriggered && this.type === 'enemy'
-    this.game.textManager.floatText(this.x, this.y-20, damageAmount, isCritHit)
 
-    this.life -= damageAmount
-    if (this.life < 0) {
-      this.alive = false
-      this.life = 0
-    }
-    this.updateLifeBar(this.life)
-
-    let particleAmount = effectiveness
-
-    if (effectiveness < 1) {
-      this.game.particleManager.block(
-        this.sprite.x, this.sprite.y, this.sprite.tint, this.facing, particleAmount
-      )
-    } else {
-      this.game.particleManager.burst(
-        this.sprite.x, this.sprite.y, this.sprite.tint, this.facing, particleAmount
-      )
-    }
+    this.takeDamage(damageAmount, effectiveness, isCritHit)
 
     let timing = 250
     let dist, angle
@@ -153,13 +202,13 @@ export default class Entity {
     // vary the tween based on how effective the hit was
     if (effectiveness === 0.5) {
       dist = 10
-      angle = 5
+      angle = 2
     } else if (effectiveness === 1) {
-      dist = 20
-      angle = 10
+      dist = 30
+      angle = 5
     } else {
       dist = 40
-      angle = 30
+      angle = 20
     }
 
     // just defended
@@ -205,12 +254,29 @@ export default class Entity {
       this.sprite.alpha = 0
       this.lifeBar.kill()
       this.game.particleManager.burst(
-        this.sprite.x, this.sprite.y, this.sprite.tint, 0, 3, 5000
+        this.sprite.x, this.sprite.y, this.sprite.tint,
+        0, 1.5, 3000, this.type === 'enemy'
       )
       this.game.entityManager.triggerWinLoseCondition()
     })
 
     attackTween.start()
+  }
+
+  setStats() {
+    let modifier = 1
+    if (this.type === 'enemy') {
+      modifier = this.game.waveNum/10
+      console.log(modifier)
+      this.job = this.game.rnd.integerInRange(0, 2)
+      this.sprite.loadTexture(`${this.type}-${jobNames[this.job]}-idle`)
+      this.sprite.tint = jobColors[this.job]
+      this.tint = jobColors[this.job]
+    }
+    this.maxLife = baseStats[this.job].hp * modifier
+    this.life = this.maxLife
+    this.power = baseStats[this.job].power * (modifier/2)
+    this.powerVariance = baseStats[this.job].powerVariance
   }
 
   heal() {
@@ -221,6 +287,7 @@ export default class Entity {
   }
 
   spawn() {
+    this.setStats()
     attackTween = this.game.add.tween(this.sprite.scale)
       .to({
         x: 1,
@@ -240,6 +307,7 @@ export default class Entity {
     const hue = 0.3 - (this.maxLife - this.life) / 300
     const rgb = Phaser.Color.HSLtoRGB(hue, 1, 0.5)
     this.color = Phaser.Color.getColor(rgb.r, rgb.g, rgb.b)
+    this.lifeBar.fullAmount = this.maxLife
     this.lifeBar.update(this.life, this.color)
   }
 

@@ -51,7 +51,6 @@ export default class UserInterface {
     attackDot.sprite.scale.setTo(1.5)
     attackDot.sprite.anchor.setTo(0.5)
 
-    this.setAttackTarget()
     this.setActionMenuPosition()
 
     leftKey = game.input.keyboard.addKey(Phaser.Keyboard.LEFT)

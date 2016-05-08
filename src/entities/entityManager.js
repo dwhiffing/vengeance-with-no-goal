@@ -14,9 +14,10 @@ let entities, enemies, players
 export default class EntityManager {
   constructor(game) {
     this.game = game
-    this.turnIndex = 0
+    this.turnIndex = -1
     this.game.entities = []
     this.game.turn = 'player'
+    this.game.waveNum = 0
 
     playerCount.forEach((pos, index) => {
       let x = index === 1 ? xBuffer + 60 : xBuffer
@@ -101,9 +102,25 @@ export default class EntityManager {
     this.game.state.start('menu')
   }
 
+  getWaveSize() {
+    if (this.game.waveNum < 2) {
+      return 2
+    } else if (this.game.waveNum < 5) {
+      return 3
+    } else if (this.game.waveNum < 10) {
+      return 4
+    } else {
+      return 5
+    }
+  }
+
   nextWave() {
     this.game.ui.allowAction = true
-    enemies.forEach((enemy) => {
+    this.game.waveNum++
+    let waveSize = this.getWaveSize()
+
+    enemies.forEach((enemy, index) => {
+      if (waveSize <= index) return
       enemy.job = this.game.rnd.integerInRange(0,2)
       enemy.spawn()
       this.game.ui.toggleActionMenu(true)

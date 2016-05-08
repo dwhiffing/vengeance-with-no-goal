@@ -1,6 +1,8 @@
 let burstEmitter, blockEmitter
 export default class ParticleManager {
   constructor(game) {
+    this.game = game
+
     burstEmitter = game.add.emitter(0, 0)
     burstEmitter.makeParticles('bit')
     burstEmitter.setRotation(200, 600)
@@ -17,13 +19,13 @@ export default class ParticleManager {
       particle.tint = 0x999999
     })
   }
-  burst(x, y, tint, direction=1, amount, lifespan) {
-    this.doBurst(burstEmitter, x, y, direction, amount, lifespan)
+  burst(x, y, tint, direction=1, amount, lifespan, addScore) {
+    this.doBurst(burstEmitter, x, y, direction, amount, lifespan, addScore)
   }
-  block(x, y, tint, direction=1, amount, lifespan) {
-    this.doBurst(blockEmitter, x, y, direction, amount, lifespan)
+  block(x, y, tint, direction=1, amount, lifespan, addScore) {
+    this.doBurst(blockEmitter, x, y, direction, amount, lifespan, addScore)
   }
-  doBurst(emitter, x, y, direction, amount, lifespan=700) {
+  doBurst(emitter, x, y, direction, amount, lifespan=700, addScore) {
     emitter.x = x
     emitter.y = y
 
@@ -45,9 +47,15 @@ export default class ParticleManager {
     } else {
       emitter.setXSpeed((-speed/2) * direction, (-speed*2) * direction)
     }
-    emitter.setYSpeed(-speed*0.5, -speed*1.3)
 
+    emitter.setYSpeed(-speed*0.5, -speed*1.3)
     emitter.start(true, lifespan, null, num)
+
+    if (addScore) {
+      setTimeout(() => {
+        this.game.textManager.addScore(num)
+      }, lifespan)
+    }
   }
   update() {
     burstEmitter.forEachAlive((p) => {

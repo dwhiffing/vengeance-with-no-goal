@@ -12,11 +12,15 @@ export default {
     this.game.bg.scale.x = 0.5
     this.game.bg.scale.y = 0.5
 
+    this.game.score = 0
+
     this.game.entityManager = new EntityManager(game)
     this.game.textManager = new TextManager(game)
     this.game.ui = new UserInterface(game)
     this.game.particleManager = new ParticleManager(game)
 
+    this.game.entityManager.nextWave()
+    this.game.ui.setAttackTarget()
 
     this.game.camera.bounds = null
     this._shakeWorldTime = 0
@@ -28,8 +32,9 @@ export default {
   },
 
   update() {
-    this.game.ui.update()
     this.game.particleManager.update()
+    this.game.textManager.update()
+
     if(this._shakeWorldTime > 0) {
       var magnitude = (this._shakeWorldTime / this._shakeWorldMax) * this._shakeWorldMax;
       var x = this.game.rnd.integerInRange(-magnitude, magnitude);

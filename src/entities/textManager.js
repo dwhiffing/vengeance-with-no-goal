@@ -1,5 +1,4 @@
-let textObj
-let floatText
+let textObj, floatText, scoreText, targetScore
 let style = {
   font: "18px Arial",
   fill: "#fff",
@@ -19,6 +18,10 @@ export default class TextManager {
   constructor(game) {
     this.game = game
     let y = game.height - 40
+
+    targetScore = 0
+
+    scoreText = game.add.text(20, 20, 'score: 0', style)
     floatText = game.add.text(0, y, '', style)
     floatText.setShadow(1, 1, 'rgba(0,0,0,1)', 1)
 
@@ -26,6 +29,18 @@ export default class TextManager {
     // textObj.setShadow(3, 3, 'rgba(0,0,0,0.5)', 2)
     textObj.setTextBounds(0, 10, game.width, 10)
   }
+
+  addScore(score) {
+    targetScore += score
+  }
+
+  update() {
+    if (this.game.score < targetScore) {
+      this.game.score++
+    }
+    scoreText.text = `score: ${this.game.score}`
+  }
+
   display(val) {
     tween = this.game.add.tween(textObj)
       .to({ alpha: 0 }, 100)
