@@ -5,17 +5,14 @@ let jobNames = ['sword', 'melee', 'bow']
 let jobColors = [0x22dd22, 0xdd0000, 0x4422dd]
 let baseStats = [
   {
-    hp: 120,
+    hp: 100,
     power: 25,
-    powerVariance: 5,
   }, {
-    hp: 300,
-    power: 30,
-    powerVariance: 1,
+    hp: 150,
+    power: 25,
   }, {
     hp: 80,
-    power: 20,
-    powerVariance: 10,
+    power: 25,
   },
 ]
 
@@ -119,7 +116,7 @@ export default class Entity {
     if (this.strongAgainst === target.job) {
       effectiveness = 2
     } else if (this.weakAgainst === target.job) {
-      effectiveness = 0.5
+      effectiveness = 0.2
     }
 
     jumpTween = this.game.add.tween(this.sprite)
@@ -148,7 +145,7 @@ export default class Entity {
     })
     attackTween.start()
 
-    let damage = this.power + this.game.rnd.integerInRange(0, this.powerVariance)
+    let damage = this.power
 
     setTimeout(() => {
       this.inTimingWindow = true
@@ -161,7 +158,7 @@ export default class Entity {
 
     setTimeout(() => {
       if (target.isDefending && effectiveness !== 1) {
-        effectiveness = effectiveness === 0.5 ? 2 : 0.5
+        effectiveness = effectiveness === 0.2 ? 2 : 0.2
       }
       let sword = this.game.players[0]
       let melee = this.game.players[1]
@@ -175,29 +172,6 @@ export default class Entity {
         target.getHit(damage, effectiveness, this.timingAttackTriggered)
       }
     }, timing/6 + damageDelay)
-  }
-
-  defenseModes() {
-    // various defense modes
-    let meleePlayer = this.game.players.filter(p => p.job === 1)[0]
-    if (this.type === 'enemy' && meleePlayer.alive && meleePlayer.isDefending && target !== meleePlayer) {
-      let old = {x: meleePlayer.sprite.x, y: meleePlayer.sprite.y}
-      meleePlayer.sprite.x = target.sprite.x
-      meleePlayer.sprite.y = target.sprite.y
-      setTimeout(() => {
-        meleePlayer.sprite.x = old.x
-        meleePlayer.sprite.y = old.y
-      }, 500)
-
-      target = meleePlayer
-    }
-    if (target.job === 2 && target.isDefending) {
-      effectiveness = 0
-    }
-    if (target.job === 0 && target.isDefending) {
-      effectiveness *= 0.5
-      this.takeDamage(damage)
-    }
   }
 
   takeDamage(damage=0, effectiveness=1, isCritHit=false) {
@@ -231,7 +205,7 @@ export default class Entity {
   getHit(damage, effectiveness, timingAttackTriggered) {
     let critMulti = 1
     if (timingAttackTriggered) {
-      critMulti = this.type === 'enemy' ? 2 : 0.3
+      critMulti = this.type === 'enemy' ? 2 : 0.5
     }
     effectiveness *= critMulti
 
@@ -243,7 +217,7 @@ export default class Entity {
     let timing = 250
     let dist, angle
     // vary the tween based on how effective the hit was
-    if (effectiveness === 0.5) {
+    if (effectiveness === 0.2) {
       dist = 3
       angle = 2
     } else if (effectiveness === 1) {
@@ -258,7 +232,7 @@ export default class Entity {
     if (this.type === 'player' && timingAttackTriggered) {
       dist = 5
       angle = 2
-    } else if (!this.isDefending){
+    } else if (!this.isDefending && effectiveness >= 1){
       this.sprite.animations.play('hit')
       setTimeout(() => {
         this.sprite.animations.play('idle', 1, true)
@@ -272,7 +246,7 @@ export default class Entity {
       dist *= 4
       angle *= 2
       this.game.critHitSound.play()
-    } else if (effectiveness > 0.5) {
+    } else if (effectiveness > 0.2) {
       this.game.hitSound.play()
     } else {
       this.game.blockSound.play()
@@ -322,15 +296,16 @@ export default class Entity {
 
   setStats() {
     let modifier = 1
+    this.maxLife = baseStats[this.job].hp
+    this.power = baseStats[this.job].power
+    modifier += (this.game.waveNum-1)/10
     if (this.type === 'enemy') {
-      modifier = this.game.waveNum/10
-      this.job = this.game.rnd.integerInRange(0, 2)
+      this.maxLife = Math.round(100 * modifier)
+      this.power *= modifier
+      this.power = Math.round(this.power)
       this.sprite.loadTexture(`${this.type}-${jobNames[this.job]}`)
     }
-    this.maxLife = baseStats[this.job].hp * modifier
     this.life = this.maxLife
-    this.power = baseStats[this.job].power * (modifier/2)
-    this.powerVariance = baseStats[this.job].powerVariance
   }
 
   revive() {

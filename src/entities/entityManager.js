@@ -10,6 +10,30 @@ let enemyXBuffer = 145
 let playerYBuffer = 80
 let enemyYBuffer = 100
 
+let waves = [
+  [0,1,2],
+  [0,0,1],
+  [1,1,2],
+  [2,2,0],
+  [0,0,1,1],
+  [1,1,2,2],
+  [2,2,0,0],
+  [0,0,1,1,2],
+  [1,1,2,2,0],
+  [2,2,0,0,1],
+  [0,1,0,1,2],
+  [2,1,1,2,0],
+  [2,0,2,0,1],
+]
+let finalWaves = [
+  [0,0,0,1,2],
+  [1,1,1,2,0],
+  [2,2,2,0,1],
+  [0,0,0,0,0],
+  [1,1,1,1,1],
+  [2,2,2,2,2],
+]
+
 let entities, enemies, players
 
 export default class EntityManager {
@@ -105,27 +129,22 @@ export default class EntityManager {
     this.game.state.start('gameover', true, false, { score: Math.round(this.game.score) })
   }
 
-  getWaveSize() {
-    if (this.game.waveNum < 2) {
-      return 2
-    } else if (this.game.waveNum < 5) {
-      return 3
-    } else if (this.game.waveNum < 10) {
-      return 4
-    } else {
-      return 5
-    }
-  }
-
   nextWave() {
     this.game.ui.allowAction = true
     this.game.waveNum++
     this.game.textManager.updateWave(this.game.waveNum)
-    let waveSize = this.getWaveSize()
+    let waveLayout
+    if (this.game.waveNum <= waves.length) {
+      waveLayout = waves[this.game.waveNum - 1]
+    } else {
+      waveLayout = finalWaves[this.game.rnd.integerInRange(0,finalWaves.length)]
+    }
+
+    let waveSize = waveLayout.length
 
     enemies.forEach((enemy, index) => {
       if (waveSize <= index) return
-      enemy.job = this.game.rnd.integerInRange(0,2)
+      enemy.job = waveLayout[index]
       enemy.spawn()
     })
 

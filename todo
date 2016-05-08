@@ -8,9 +8,6 @@ enemies should fight in predictable way
   predetermined waves that increase in difficult
   make game more about target choice by always having one of each early on
   then make it harder by diversifying waves
-different timings for every entity for attack and defense
-add sound effects
-  move select, pick select
 
 add rock to top right corner of bg to cover score / wave text
 fix background to have enough space for mobile buttons
@@ -19,6 +16,7 @@ fix background to have enough space for mobile buttons
 add mobile controls
   arrows on left, select on right
 
+different timings for every entity for attack and defense?
 allow going back in ui?
 allow selecting of player at beginning of each turn?
 add shadows?
@@ -32,3 +30,25 @@ add title menu
 add high score menu?
   add local high scores
   add online high scores
+
+improve text copy for ui
+
+waves
+  1: one of each
+  2: two of melee, bow missing
+  3: two of sword, melee missing
+  4: two of bow, sword missing
+  5: two melee, two sword, one bow
+  6: two sword, two bow, one melee
+  7: two bow, two melee, one sword
+  8-15:
+    three melee, one bow, one sword
+    three sword, one melee, one bow
+    three bow, one melee, one sword
+  15+:
+    four melee, one bow
+    four sword, one melee
+    four bow, one sword
+    five melee
+    five sword
+    five bow
