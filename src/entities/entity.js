@@ -163,7 +163,17 @@ export default class Entity {
       if (target.isDefending && effectiveness !== 1) {
         effectiveness = effectiveness === 0.5 ? 2 : 0.5
       }
-      target.getHit(damage, effectiveness, this.timingAttackTriggered)
+      let sword = this.game.players[0]
+      let melee = this.game.players[1]
+      if (sword.isAssisting && sword.assistTarget === target && this.type === 'enemy') {
+        // this should respect effectiveness rules for sword instead
+        sword.attack(this)
+      } else if (melee.isAssisting && melee.assistTarget === target && this.type === 'enemy') {
+        // this should respect effectiveness rules for melee insetad
+        melee.getHit(damage, effectiveness, this.timingAttackTriggered)
+      } else {
+        target.getHit(damage, effectiveness, this.timingAttackTriggered)
+      }
     }, timing/6 + damageDelay)
   }
 

@@ -46,6 +46,7 @@ export default class Player extends Entity {
       defenseTween.start()
     } else if (action === 'boost') {
       this.isAssisting = true
+      this.assistTarget = target
       this.sprite.animations.play('defend')
       this.sprite.z = 10
 
@@ -57,6 +58,8 @@ export default class Player extends Entity {
         .start()
     } else if (action === 'protect') {
       this.isAssisting = true
+      this.isDefending = true
+      this.assistTarget = target
       this.sprite.animations.play('defend')
       this.sprite.z = 10
 
