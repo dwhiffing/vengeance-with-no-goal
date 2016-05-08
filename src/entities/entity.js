@@ -8,7 +8,7 @@ let baseStats = [
     hp: 100,
     power: 25,
   }, {
-    hp: 150,
+    hp: 200,
     power: 25,
   }, {
     hp: 80,
@@ -90,7 +90,7 @@ export default class Entity {
     }, this.game.rnd.integerInRange(0, delay))
   }
 
-  attack(target, callback=()=>{}) {
+  attack(target, callback=()=>{}, effectiveness) {
     if (!this.sprite.alive || !target.sprite.alive) return
     this.timingAttackTriggered = false
     this.alreadyTriggered = false
@@ -110,13 +110,15 @@ export default class Entity {
       damageDelay = 500
     }
 
-    this.sprite.animations.play('attack', 0.5, false, false)
+    this.sprite.animations.play('attack', 2)
 
-    let effectiveness = 1
-    if (this.strongAgainst === target.job) {
-      effectiveness = 2
-    } else if (this.weakAgainst === target.job) {
-      effectiveness = 0.2
+    if (!effectiveness) {
+      effectiveness = 1
+      if (this.strongAgainst === target.job) {
+        effectiveness = 2
+      } else if (this.weakAgainst === target.job) {
+        effectiveness = 0.2
+      }
     }
 
     jumpTween = this.game.add.tween(this.sprite)
@@ -157,17 +159,19 @@ export default class Entity {
     }, timing/14)
 
     setTimeout(() => {
+      // if defending, reverse effectiveness
       if (target.isDefending && effectiveness !== 1) {
-        effectiveness = effectiveness === 0.2 ? 2 : 0.2
+        effectiveness *= effectiveness < 1 ? 2 : 0.5
       }
       let sword = this.game.players[0]
       let melee = this.game.players[1]
       if (sword.isAssisting && sword.assistTarget === target && this.type === 'enemy') {
         // this should respect effectiveness rules for sword instead
-        sword.attack(this)
+        sword.attack(this, () => {}, 2)
+        target.getHit(damage, 0.75, this.timingAttackTriggered)
       } else if (melee.isAssisting && melee.assistTarget === target && this.type === 'enemy') {
         // this should respect effectiveness rules for melee insetad
-        melee.getHit(damage, effectiveness, this.timingAttackTriggered)
+        melee.getHit(damage, 1, this.timingAttackTriggered)
       } else {
         target.getHit(damage, effectiveness, this.timingAttackTriggered)
       }
@@ -277,6 +281,7 @@ export default class Entity {
       }, 800, Phaser.Easing.Quadratic.Out)
     this.sprite.animations.play('dead', 0)
     this.alive = false
+    this.stopDefendingOrAssisting && this.stopDefendingOrAssisting()
 
     this.game.entityManager.checkWinLoseCondition()
 
@@ -304,6 +309,8 @@ export default class Entity {
       this.power *= modifier
       this.power = Math.round(this.power)
       this.sprite.loadTexture(`${this.type}-${jobNames[this.job]}`)
+      this.strongAgainst = this.job + 1 > 2 ? 0 : this.job + 1
+      this.weakAgainst = this.job - 1 < 0 ? 2 : this.job - 1
     }
     this.life = this.maxLife
   }

@@ -6,9 +6,10 @@ export default class Enemy extends Entity {
   }
 
   attackBestTarget(players, callback) {
-    let bestTarget = players.filter(p => !!p.alive && p.job === this.strongAgainst)[0]
-    bestTarget = bestTarget || players.filter(p => !!p.alive && p.job !== this.weakAgainst)[0]
-    bestTarget = bestTarget || players.filter(p => !!p.alive && p.job === this.weakAgainst)[0]
+    let bestTarget = players.filter(p => p.alive && p.job === this.strongAgainst && !p.isAssisting)[0]
+    bestTarget = bestTarget || players.filter(p => p.alive && p.job !== this.weakAgainst && !p.isAssisting)[0]
+    bestTarget = bestTarget || players.filter(p => p.alive && p.job === this.weakAgainst && !p.isAssisting)[0]
+    console.log(this.job, this.strongAgainst, bestTarget.job)
     if (bestTarget) {
       this.attack(bestTarget, callback)
     }

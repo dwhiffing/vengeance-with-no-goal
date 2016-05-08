@@ -42,7 +42,7 @@ export default class Player extends Entity {
       defenseTween = this.game.add.tween(this.sprite.scale)
         .to({ x: 0.85, y: 1.5 }, 250)
         .yoyo(true)
-      this.sprite.tint = 0x3333dd
+      this.sprite.tint = 0x9999ff
       setTimeout(() => this.sprite.tint = 0xffffff, 500)
       defenseTween.onComplete.add(() => {
         target.heal(this.game.rnd.integerInRange(20, 30))
@@ -54,7 +54,7 @@ export default class Player extends Entity {
       this.assistTarget = target
       this.sprite.animations.play('defend')
       this.sprite.z = 10
-      this.sprite.tint = 0x3333dd
+      this.sprite.tint = 0x9999ff
 
       defenseTween = this.game.add.tween(this.sprite)
         .to({
@@ -70,7 +70,7 @@ export default class Player extends Entity {
       this.assistTarget = target
       this.sprite.animations.play('defend')
       this.sprite.z = 10
-      this.sprite.tint = 0x3333dd
+      this.sprite.tint = 0x9999ff
 
       defenseTween = this.game.add.tween(this.sprite)
         .to({

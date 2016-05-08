@@ -1,26 +1,11 @@
-add counter ability
-  does damage with both sword and target effectiveness
-add protect ability
-  melee takes all damage
-  takes damage with both melee and target effectiveness
+BUG: improve text copy for ui
+BUG: fix assisting moving sprite over after moving back
 
-enemies should fight in predictable way
-  predetermined waves that increase in difficult
-  make game more about target choice by always having one of each early on
-  then make it harder by diversifying waves
-
-add rock to top right corner of bg to cover score / wave text
-fix background to have enough space for mobile buttons
-  and be dark along the bottom
-
+allow going back in ui
 add mobile controls
   arrows on left, select on right
 
 different timings for every entity for attack and defense?
-allow going back in ui?
-allow selecting of player at beginning of each turn?
-add shadows?
-move lifebar into group with entity and move group around instead?
 make window for defense bigger?
 improve tweens and refactor them?
 
@@ -30,25 +15,3 @@ add title menu
 add high score menu?
   add local high scores
   add online high scores
-
-improve text copy for ui
-
-waves
-  1: one of each
-  2: two of melee, bow missing
-  3: two of sword, melee missing
-  4: two of bow, sword missing
-  5: two melee, two sword, one bow
-  6: two sword, two bow, one melee
-  7: two bow, two melee, one sword
-  8-15:
-    three melee, one bow, one sword
-    three sword, one melee, one bow
-    three bow, one melee, one sword
-  15+:
-    four melee, one bow
-    four sword, one melee
-    four bow, one sword
-    five melee
-    five sword
-    five bow
