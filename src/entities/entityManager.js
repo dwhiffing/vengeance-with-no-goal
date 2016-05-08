@@ -19,12 +19,14 @@ export default class EntityManager {
     this.game.entities = []
     this.game.turn = 'player'
     this.game.waveNum = 0
+    this.group = game.add.group()
 
     playerCount.forEach((pos, index) => {
       let x = index === 1 ? xBuffer + 60 : xBuffer
       let y = index % 3 * playerYBuffer + yBuffer
       let player = new Player(game, x, y, index)
       this.game.entities.push(player)
+      this.group.add(player.sprite)
     })
 
     enemyCount.forEach((pos, index) => {
@@ -34,6 +36,7 @@ export default class EntityManager {
       let y = index < 3 ? y1 : y1 + enemyYBuffer/2
       let enemy = new Enemy(game, x, y, game.rnd.integerInRange(0,2))
       this.game.entities.push(enemy)
+      this.group.add(enemy.sprite)
     })
 
     this.game.enemies = this.game.entities
@@ -124,10 +127,8 @@ export default class EntityManager {
       enemy.job = this.game.rnd.integerInRange(0,2)
       enemy.spawn()
     })
-    // players.forEach((player) => {
-    //   player.heal()
-    // })
 
+    this.resetPlayers()
     setTimeout(() => {
       this.turnIndex = -1
       this.game.ui.allowAction = false
@@ -135,6 +136,12 @@ export default class EntityManager {
       this.game.textManager.clear
       this._nextTurn()
     }, 1500)
+  }
+
+  resetPlayers() {
+    players.forEach((player) => {
+      player.reset()
+    })
   }
 
   _getUnitForNextTurn() {
@@ -156,8 +163,12 @@ export default class EntityManager {
     if (this.checkWinLoseCondition()) {
       return
     }
-
+    let lastTurn = this.game.turn
     this.game.turn = this.turnIndex > 2 ? 'enemy' : 'player'
+
+    if (lastTurn === 'enemy' && this.game.turn === 'player') {
+      this.resetPlayers()
+    }
 
     if (this.game.turn === 'player') {
       this._performPlayerMove(this.game.nextToMove)

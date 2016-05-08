@@ -11,6 +11,7 @@ add mobile controls
   arrows on left, select on right
 add shadows?
 allow going back in ui?
+bug: enemies stop idle animation when they respawn
 
 allow selecting of player at beginning of each turn?
 allow cancel?
