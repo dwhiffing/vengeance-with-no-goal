@@ -19,24 +19,24 @@ export default class ParticleManager {
       particle.tint = 0x999999
     })
   }
-  burst(x, y, tint, direction=1, amount, lifespan, addScore) {
+  burst(x, y, direction=1, amount, lifespan, addScore) {
     this.doBurst(burstEmitter, x, y, direction, amount, lifespan, addScore)
   }
-  block(x, y, tint, direction=1, amount, lifespan, addScore) {
+  block(x, y, direction=1, amount, lifespan, addScore) {
     this.doBurst(blockEmitter, x, y, direction, amount, lifespan, addScore)
   }
   doBurst(emitter, x, y, direction, amount, lifespan=700, addScore) {
     emitter.x = x
     emitter.y = y
 
-    emitter.minParticleScale = 0.4 * amount
-    emitter.maxParticleScale = 0.6 * amount
+    emitter.minParticleScale = 0.1 * amount
+    emitter.maxParticleScale = 0.4 * amount
 
-    if (emitter.minParticleScale < 0.3) {
-      emitter.minParticleScale = 0.3
+    if (emitter.minParticleScale < 0.2) {
+      emitter.minParticleScale = 0.2
     }
-    if (emitter.maxParticleScale > 0.6) {
-      emitter.maxParticleScale = 0.6
+    if (emitter.maxParticleScale > 0.5) {
+      emitter.maxParticleScale = 0.5
     }
 
     let num = Math.floor(10 * amount)

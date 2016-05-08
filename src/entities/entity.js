@@ -28,8 +28,6 @@ export default class Entity {
   constructor(game, x, y, type, job) {
     this.sprite = game.add.sprite(x, y, `${type}-${jobNames[job]}-idle`)
     this.sprite.anchor.setTo(0.5)
-    this.sprite.tint = jobColors[job]
-    this.tint = jobColors[job]
     this.x = this.sprite.x
     this.y = this.sprite.y
     ease = Phaser.Easing
@@ -124,11 +122,9 @@ export default class Entity {
 
     setTimeout(() => {
       this.inTimingWindow = true
-      this.sprite.tint = 0xffffff
-      this.sprite.scale.setTo(1.3)
+      this.sprite.tint = 0xffff00
       setTimeout(() => {
-        this.sprite.tint = this.tint
-        this.sprite.scale.setTo(1)
+        this.sprite.tint = 0xffffff
         this.inTimingWindow = false
       }, timing/3)
     }, timing/14)
@@ -172,12 +168,12 @@ export default class Entity {
     let particleAmount = effectiveness
     if (effectiveness < 1) {
       this.game.particleManager.block(
-        this.sprite.x, this.sprite.y, this.sprite.tint, this.facing,
+        this.sprite.x, this.sprite.y, this.facing,
         particleAmount, undefined, this.type === 'enemy'
       )
     } else {
       this.game.particleManager.burst(
-        this.sprite.x, this.sprite.y, this.sprite.tint, this.facing,
+        this.sprite.x, this.sprite.y, this.facing,
         particleAmount, undefined, this.type === 'enemy'
       )
     }
@@ -198,7 +194,7 @@ export default class Entity {
 
     let timing = 250
     let dist, angle
-    let tint = this.tint
+    let tint = 0xffffff
     // vary the tween based on how effective the hit was
     if (effectiveness === 0.5) {
       dist = 10
@@ -221,7 +217,7 @@ export default class Entity {
       this.game.shake(damageAmount/2, 100)
       dist *= 4
       angle *= 2
-      tint = 0xffffff
+      tint = 0xff0000
     }
 
     attackTween = this.game.add.tween(this.sprite)
@@ -254,7 +250,7 @@ export default class Entity {
       this.sprite.alpha = 0
       this.lifeBar.kill()
       this.game.particleManager.burst(
-        this.sprite.x, this.sprite.y, this.sprite.tint,
+        this.sprite.x, this.sprite.y,
         0, 1.5, 3000, this.type === 'enemy'
       )
       this.game.entityManager.triggerWinLoseCondition()
@@ -267,10 +263,8 @@ export default class Entity {
     let modifier = 1
     if (this.type === 'enemy') {
       modifier = this.game.waveNum/10
-      console.log(modifier)
       this.job = this.game.rnd.integerInRange(0, 2)
       this.sprite.loadTexture(`${this.type}-${jobNames[this.job]}-idle`)
-      this.sprite.tint = jobColors[this.job]
       this.tint = jobColors[this.job]
     }
     this.maxLife = baseStats[this.job].hp * modifier
@@ -304,7 +298,7 @@ export default class Entity {
   }
 
   updateLifeBar() {
-    const hue = 0.3 - (this.maxLife - this.life) / 300
+    const hue = 0.3334 - ((this.maxLife - this.life) / (3 * this.maxLife))
     const rgb = Phaser.Color.HSLtoRGB(hue, 1, 0.5)
     this.color = Phaser.Color.getColor(rgb.r, rgb.g, rgb.b)
     this.lifeBar.fullAmount = this.maxLife

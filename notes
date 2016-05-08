@@ -56,3 +56,14 @@ title ideas
 
 
 should replace all timeout calls with phaser timers/events to prevent weirdness while paused
+
+
+
+blue becomes counter
+  counter inverts the rps system, so your weakness becomes your strength for that round
+  you also counter attack anything that hits you if it was your weakness
+
+green becomes assitive ability
+  sword boosts a players attack for the next 2 turns
+  red defends target from attack for next turn
+  bow heals a player by 25%
