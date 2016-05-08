@@ -8,7 +8,7 @@ let xBuffer = 150
 let yBuffer = 150
 let enemyXBuffer = 145
 let playerYBuffer = 80
-let enemyYBuffer = 100
+let enemyYBuffer = 85
 
 let waves = [
   [0,1,2],

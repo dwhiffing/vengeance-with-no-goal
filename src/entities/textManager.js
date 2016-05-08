@@ -23,8 +23,8 @@ export default class TextManager {
 
     targetScore = 0
 
-    scoreText = game.add.text(this.game.width - 130, 20, 'score: 0', style)
-    waveText = game.add.text(this.game.width - 130, 50, 'wave: 0', style)
+    scoreText = game.add.text(this.game.width - 120, 10, 'score: 0', style)
+    waveText = game.add.text(this.game.width - 120, 40, 'wave: 0', style)
 
     textObj = game.add.text(0, y, '', style)
     textObj.setShadow(3, 3, 'rgba(0,0,0,0.5)', 2)

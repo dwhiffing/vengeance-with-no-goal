@@ -23,7 +23,7 @@ export default {
     this.load.image('attack-icon', 'images/attack-icon.png')
     this.load.image('counter-icon', 'images/counter-icon.png')
     this.load.image('assist-icon', 'images/assist-icon.png')
-    this.load.image('bg', 'images/bg.jpg')
+    this.load.image('bg', 'images/bg.png')
     this.load.spritesheet('bar', 'images/bar.png', 150, 20);
 
     this.load.spritesheet('player-melee', 'images/player-melee.png', 200, 200)
