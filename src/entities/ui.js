@@ -3,6 +3,7 @@ class Dot {
   constructor(game, group, x, y, key) {
     this.sprite = game.add.sprite(x, y, key)
     this.sprite.anchor.x = 0.5
+    this.sprite.anchor.y = 0.5
     if (group) {
       group.add(this.sprite)
     }
@@ -42,8 +43,14 @@ export default class UserInterface {
     players = this.game.players
 
     actionIndex = 0
-    actionDot = new Dot(game, actionGroup, -buffer, 20, 'ball')
-    actionDot.sprite.alpha = 0.3
+    actionDot = new Dot(game, actionGroup, -buffer, 20, 'select')
+    actionDot.sprite.alpha = 0.5
+    actionDot.sprite.width = 60
+    actionDot.sprite.height = 60
+    let actionDotTween = this.game.add.tween(actionDot.sprite)
+      .to({ angle: 360 }, 10000)
+      .loop()
+      .start()
 
     attackIndex = 0
     attackDot = new Dot(game, null, -buffer, 20, 'select')
@@ -110,7 +117,7 @@ export default class UserInterface {
     }
     actionGroup.alpha = 1
     actionGroup.x = target.x
-    actionGroup.y = target.y - 150
+    actionGroup.y = target.y - 110
     attackDot.sprite.alpha = 0
     this.allowAction = true
     this.game.textManager.display(actions[actionIndex])

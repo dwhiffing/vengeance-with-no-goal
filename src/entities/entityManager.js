@@ -5,9 +5,10 @@ let playerCount = [0,1,2]
 let enemyCount = [0,1,2,3,4]
 
 let xBuffer = 150
-let yBuffer = 150
+let yBuffer = 170
 let enemyXBuffer = 130
-let enemyYBuffer = 100
+let playerYBuffer = 80
+let enemyYBuffer = 110
 
 let entities, enemies, players
 
@@ -21,7 +22,7 @@ export default class EntityManager {
 
     playerCount.forEach((pos, index) => {
       let x = index === 1 ? xBuffer + 60 : xBuffer
-      let y = index % 3 * enemyYBuffer + yBuffer
+      let y = index % 3 * playerYBuffer + yBuffer
       let player = new Player(game, x, y, index)
       this.game.entities.push(player)
     })
