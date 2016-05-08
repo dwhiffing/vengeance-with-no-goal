@@ -78,11 +78,11 @@ export default class Entity {
 
   idle(delay=1000) {
     setTimeout(() => {
-      this.sprite.animations.play('idle', 0.5, true)
+      this.sprite.animations.play('idle', 1, true)
       pulseTween = this.game.add.tween(this.sprite.scale)
         .to(
-          { x: 1.04, y: 1.06},
-          2000,
+          { x: 1.03, y: 1.04},
+          1000,
           Phaser.Easing.Quadratic.InOut
         )
         .yoyo(true)
@@ -141,7 +141,7 @@ export default class Entity {
 
       // prevent player from attacking before tweens end
       backTween.onComplete.add(() => {
-        this.sprite.animations.play('idle', 0.5, true)
+        this.sprite.animations.play('idle', 1, true)
         callback()
       })
       backTween.start()
@@ -259,7 +259,7 @@ export default class Entity {
     } else if (!this.isDefending){
       this.sprite.animations.play('hit')
       setTimeout(() => {
-        this.sprite.animations.play('idle', 0.5, true)
+        this.sprite.animations.play('idle', 1, true)
       }, 500)
     }
 
@@ -280,7 +280,7 @@ export default class Entity {
       if (this.life === 0) {
         this.kill()
       } else if (!this.isDefending || this.type === 'enemy'){
-        this.sprite.animations.play('idle', 0.5, true)
+        this.sprite.animations.play('idle', 1, true)
       }
     }, 500)
 
@@ -300,7 +300,7 @@ export default class Entity {
     attackTween.onComplete.add(() => {
       this.sprite.alpha = 0
       this.lifeBar.kill()
-      this.sprite.animations.play('idle', 0.5, true)
+      this.sprite.animations.play('idle', 1, true)
       this.game.particleManager.burst(
         this.sprite.x, this.sprite.y, 0, 1.5, 1500
       )
@@ -332,7 +332,7 @@ export default class Entity {
 
   spawn() {
     this.setStats()
-    this.sprite.animations.play('idle', 0.5, true)
+    this.sprite.animations.play('idle', 1, true)
     attackTween = this.game.add.tween(this.sprite.scale)
       .to({
         x: 1,
