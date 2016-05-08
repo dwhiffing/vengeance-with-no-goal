@@ -78,6 +78,7 @@ export default class UserInterface {
   }
 
   move(amount) {
+    this.game.selectSound.play()
     uiMode === 'action' ?
       this.moveActionIndex(amount) :
       this.moveTargetIndex(amount)
@@ -186,7 +187,11 @@ export default class UserInterface {
   }
 
   doSelectedAction() {
-    if (!this.allowAction || this.game.turn === 'enemy') return
+    if (!this.allowAction || this.game.turn === 'enemy') {
+      this.game.cancelSound.play()
+      return
+    }
+    this.game.confirmSound.play()
     switch (actionIndex) {
       case 0: {
         this.allowAction = false

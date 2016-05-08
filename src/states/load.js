@@ -2,12 +2,18 @@ export default {
   preload() {
     this.load.onLoadComplete.addOnce(this.onLoadComplete, this)
 
-    this.load.audio('hit1', 'audio/hit.mp3')
-    this.load.audio('hit2', 'audio/hit2.mp3')
-    this.load.audio('hit3', 'audio/hit3.mp3')
-    this.load.audio('comboend', 'audio/comboend.mp3')
-    this.load.audio('hitball', 'audio/hitball.mp3')
-    this.load.audio('dead', 'audio/dead.mp3')
+    this.load.audio('block', 'audio/block.mp3')
+    this.load.audio('cancel', 'audio/cancel.mp3')
+    this.load.audio('confirm', 'audio/confirm.mp3')
+    this.load.audio('crit', 'audio/crit.mp3')
+    this.load.audio('gameover', 'audio/gameover.mp3')
+    this.load.audio('heal', 'audio/heal.mp3')
+    this.load.audio('hit', 'audio/hit.mp3')
+    this.load.audio('parry', 'audio/parry.mp3')
+    this.load.audio('select', 'audio/select.mp3')
+    this.load.audio('spawn', 'audio/spawn.mp3')
+    this.load.audio('death', 'audio/zerohealth.mp3')
+    this.load.audio('kill', 'audio/zerohealthexplode.mp3')
 
     this.load.audio('music', 'audio/battle-music.ogg')
 

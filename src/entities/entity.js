@@ -205,6 +205,7 @@ export default class Entity {
     this.game.textManager.floatText(this.sprite.x-((spacing+this.lifebarSpacing)*this.facing), this.y-50, damage, isCritHit)
     this.life -= damage
     if (this.life < 0) {
+      this.game.deathSound.play()
       this.alive = false
       this.life = 0
     }
@@ -270,6 +271,11 @@ export default class Entity {
       this.game.shake(shakeAmount, 100)
       dist *= 4
       angle *= 2
+      this.game.critHitSound.play()
+    } else if (effectiveness > 0.5) {
+      this.game.hitSound.play()
+    } else {
+      this.game.blockSound.play()
     }
 
     attackTween = this.game.add.tween(this.sprite)
@@ -304,6 +310,7 @@ export default class Entity {
       this.sprite.alpha = 0
       this.lifeBar.kill()
       this.sprite.animations.play('idle', 1, true)
+      this.game.killSound.play()
       this.game.particleManager.burst(
         this.sprite.x, this.sprite.y, 0, 1.5, 1500
       )
@@ -331,6 +338,7 @@ export default class Entity {
     this.life = this.maxLife
     this.updateLifeBar()
     this.lifeBar.spawn()
+    this.game.reviveSound.play()
   }
 
   spawn() {
@@ -363,6 +371,7 @@ export default class Entity {
     if (this.alreadyTriggered) return
     this.alreadyTriggered = true
     if (this.inTimingWindow) {
+      this.game.parrySound.play()
       this.timingAttackTriggered = true
     } else {
       this.timingAttackTriggered = false

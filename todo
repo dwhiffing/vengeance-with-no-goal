@@ -4,9 +4,6 @@ add protect ability
   melee takes all damage
   takes damage with both melee and target effectiveness
 
-add tweens for heal
-  tint green and show green number for health
-
 enemies should fight in predictable way
   predetermined waves that increase in difficult
   make game more about target choice by always having one of each early on
@@ -15,16 +12,12 @@ different timings for every entity for attack and defense
 add sound effects
   move select, pick select
 
-add tweens for life text going up/down
-
 add rock to top right corner of bg to cover score / wave text
 fix background to have enough space for mobile buttons
   and be dark along the bottom
-less green on red enemy
-less blue on green player
 
 add mobile controls
-  arrows on left, select on right
+  arrows on left, select on right
 
 allow going back in ui?
 allow selecting of player at beginning of each turn?

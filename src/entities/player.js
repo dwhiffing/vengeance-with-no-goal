@@ -97,6 +97,7 @@ export default class Player extends Entity {
     this.game.textManager.floatText(this.sprite.x-((50+this.lifebarSpacing)*this.facing), this.y-50, value, false, '#0f0')
 
     let lastTint = this.sprite.tint
+    this.game.healSound.play()
     this.sprite.tint = 0x00ff00
     setTimeout(() => this.sprite.tint = lastTint, 500)
   }
