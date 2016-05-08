@@ -14,6 +14,7 @@ export default {
 
     this.game.score = 0
     this.game.music = this.game.add.audio('music', 0.5)
+    this.game.music.loop = true
     this.game.music.play()
 
     this.game.selectSound = game.add.audio('select')

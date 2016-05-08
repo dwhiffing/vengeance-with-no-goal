@@ -167,11 +167,13 @@ export default class Entity {
       let melee = this.game.players[1]
       if (sword.isAssisting && sword.assistTarget === target && this.type === 'enemy') {
         // this should respect effectiveness rules for sword instead
-        sword.attack(this, () => {}, 2)
-        target.getHit(damage, 0.75, this.timingAttackTriggered)
+        // GAAAH STUPID BUG
+        // sword.attack(this, () => {}, 2)
+        this.takeDamage(sword.power)
+        sword.getHit(damage, 0.2, this.timingAttackTriggered)
       } else if (melee.isAssisting && melee.assistTarget === target && this.type === 'enemy') {
         // this should respect effectiveness rules for melee insetad
-        melee.getHit(damage, 0.75, this.timingAttackTriggered)
+        melee.getHit(damage, 0.5, this.timingAttackTriggered)
       } else {
         target.getHit(damage, effectiveness, this.timingAttackTriggered)
       }
@@ -279,7 +281,7 @@ export default class Entity {
     attackTween = this.game.add.tween(this.sprite)
       .to({ alpha }, 800, Phaser.Easing.Quadratic.Out)
     this.stopDefendingOrAssisting && this.stopDefendingOrAssisting()
-    
+
     this.sprite.animations.play('dead')
     this.alive = false
 

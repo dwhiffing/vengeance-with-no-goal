@@ -4,7 +4,7 @@ export default {
   create(game) {
     this.game = game
     game.stage.backgroundColor = '#000000'
-    this.titleText = game.add.text(this.game.world.centerX, this.game.world.centerY-50, "The Adventures of Rok, Papier and Sizzorix", { font: "bold 42px Arial", fill: "#fff" })
+    this.titleText = game.add.text(this.game.world.centerX, this.game.world.centerY-50, "Vengeance With no Goal", { font: "bold 42px Arial", fill: "#fff" })
     this.titleText.anchor.setTo(0.5)
     this.startText = game.add.text(this.game.world.centerX, this.game.world.centerY+50, "Start", { font: "bold 32px Arial", fill: "#fff" })
     this.startText.anchor.setTo(0.5)

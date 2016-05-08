@@ -69,6 +69,22 @@ export default class UserInterface {
     downKey.onDown.add(this.move.bind(this, -1))
     spaceKey.onDown.add(this.hitSpace.bind(this))
     escKey.onDown.add(this.hitEsc.bind(this))
+
+    if (!this.game.device.desktop) {
+      let leftArrow = game.add.button(10, game.height-55, 'arrow', this.move.bind(this, -1))
+      let rightArrow = game.add.button(75, game.height-55, 'rightarrow', this.move.bind(this, 1))
+      let confirm = game.add.button(game.width-60, game.height-60, 'confirm', this.hitSpace.bind(this))
+      let cancel = game.add.button(game.width-110, game.height-40, 'cancel', this.hitEsc.bind(this))
+      confirm.width = 50
+      confirm.height = 50
+      leftArrow.width = 50
+      leftArrow.height = 50
+      rightArrow.scale.x = -1
+      rightArrow.width = 50
+      rightArrow.height = 50
+      cancel.width = 30
+      cancel.height = 30
+    }
   }
 
   hitSpace() {

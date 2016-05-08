@@ -24,6 +24,10 @@ export default {
     this.load.image('attack-icon', 'images/attack-icon.png')
     this.load.image('counter-icon', 'images/counter-icon.png')
     this.load.image('assist-icon', 'images/assist-icon.png')
+    this.load.image('confirm', 'images/confirm.png')
+    this.load.image('cancel', 'images/cancel.png')
+    this.load.image('arrow', 'images/arrow.png')
+    this.load.image('rightarrow', 'images/rightarrow.png')
     this.load.image('bg', 'images/bg.png')
     this.load.spritesheet('bar', 'images/bar.png', 150, 20);
 
