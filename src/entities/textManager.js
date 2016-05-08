@@ -19,7 +19,7 @@ let tween, tween2
 export default class TextManager {
   constructor(game) {
     this.game = game
-    let y = game.height - 40
+    let y = game.height - 30
 
     targetScore = 0
 
