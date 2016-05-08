@@ -37,9 +37,9 @@ export default class UserInterface {
     actionGroup = game.add.group()
     uiMode = 'action'
 
-    attack = new Dot(game, actionGroup, -buffer, 20, 'attack-icon')
+    attack = new Dot(game, actionGroup, -buffer, 40, 'attack-icon')
     defend = new Dot(game, actionGroup, 0, 20, 'counter-icon')
-    assistButton = new Dot(game, actionGroup, buffer, 20, 'assist-icon')
+    assistButton = new Dot(game, actionGroup, buffer, 40, 'assist-icon')
     buttons = [attack, defend, assistButton]
 
     entities = this.game.entities

@@ -1,7 +1,7 @@
 import HealthText from '../entities/text'
 
 let sprites = ['ball', 'square', 'triangle']
-let jobNames = ['sword', 'axe', 'bow']
+let jobNames = ['sword', 'melee', 'bow']
 let jobColors = [0x22dd22, 0xdd0000, 0x4422dd]
 let baseStats = [
   {
@@ -21,11 +21,12 @@ let baseStats = [
 
 let attackTween, backTween, jumpTween, damageTween, pulseTween
 let ease
+let idleAnim, attackAnim, hitAnim, deadAnim, defendAnim
 
 export default class Entity {
 
   constructor(game, x, y, type, job) {
-    this.sprite = game.add.sprite(x, y, `${type}-${jobNames[job]}-idle`)
+    this.sprite = game.add.sprite(x, y, `${type}-${jobNames[job]}`)
     this.sprite.anchor.setTo(0.5, 0.7)
     this.x = this.sprite.x
     this.y = this.sprite.y
@@ -44,6 +45,13 @@ export default class Entity {
     this.strongAgainst = this.job + 1 > 2 ? 0 : this.job + 1
     this.weakAgainst = this.job - 1 < 0 ? 2 : this.job - 1
 
+    idleAnim = this.sprite.animations.add('idle', [0, 1])
+    attackAnim = this.sprite.animations.add('attack', [2, 3])
+    hitAnim = this.sprite.animations.add('hit', [4])
+    deadAnim = this.sprite.animations.add('dead', [5])
+    defendAnim = this.sprite.animations.add('defend', [6])
+
+
     this.lifeBarWidth = this.sprite.width/4
     let lifeBarY = this.sprite.y
     let lifeBarX = this.sprite.x-this.facing*60 - (this.type === 'player' ? 70 : 0)
@@ -59,22 +67,28 @@ export default class Entity {
     this.updateLifeBar()
     this.revive()
 
-    pulseTween = game.add.tween(this.sprite.scale)
-      .to(
-        { x: 1.03, y: 1.04},
-        this.game.rnd.integerInRange(800,1500),
-        Phaser.Easing.Quadratic.InOut
-      )
-      .yoyo(true)
-      .loop(true)
-      .start()
-
     if (this.type !== 'player') {
       this.alive = false
       this.sprite.alpha = 0
       this.lifeBar.kill()
     }
 
+    this.idle()
+  }
+
+  idle(delay=1000) {
+    setTimeout(() => {
+      this.sprite.animations.play('idle', 0.5, true)
+      pulseTween = this.game.add.tween(this.sprite.scale)
+        .to(
+          { x: 1.04, y: 1.06},
+          2000,
+          Phaser.Easing.Quadratic.InOut
+        )
+        .yoyo(true)
+        .loop(true)
+        .start()
+    }, this.game.rnd.integerInRange(0, delay))
   }
 
   attack(target, callback=()=>{}) {
@@ -99,6 +113,8 @@ export default class Entity {
       damageDelay = 500
     }
 
+    this.sprite.animations.play('attack', 0.5, false, false)
+
     let effectiveness = 1
     if (this.strongAgainst === target.job) {
       effectiveness = 2
@@ -117,6 +133,7 @@ export default class Entity {
         angle: 20 * this.facing * angle,
       }, timing, ease.Elastic.Out)
     attackTween.onComplete.add(() => {
+      this.idle(0)
       backTween = this.game.add.tween(this.sprite)
         .to({
           x: this.sprite.x - dist * this.facing,
@@ -213,13 +230,13 @@ export default class Entity {
     let dist, angle
     // vary the tween based on how effective the hit was
     if (effectiveness === 0.5) {
-      dist = 10
+      dist = 3
       angle = 2
     } else if (effectiveness === 1) {
-      dist = 30
+      dist = 7
       angle = 5
     } else {
-      dist = 40
+      dist = 15
       angle = 20
     }
 
@@ -227,6 +244,8 @@ export default class Entity {
     if (this.type === 'player' && timingAttackTriggered) {
       dist = 5
       angle = 2
+    } else {
+      this.sprite.animations.play('hit')
     }
 
     if (isCritHit) {
@@ -242,27 +261,31 @@ export default class Entity {
       }, timing, ease.Bounce.Out)
       .yoyo(true, timing)
 
-    attackTween.onComplete.add(() => {
+    setTimeout(() => {
       if (this.life === 0) {
         this.kill()
+      } else {
+        this.idle(0)
       }
-    })
+    }, 500)
+
     attackTween.start()
   }
 
   kill() {
-    this.alive = false
-    attackTween = this.game.add.tween(this.sprite.scale)
+    attackTween = this.game.add.tween(this.sprite)
       .to({
-        x: 0.1,
-        y: 0.1,
-      }, 500, ease.Quadratic.In)
+        alpha: 0.2,
+      }, 800, Phaser.Easing.Quadratic.Out)
+    this.sprite.animations.play('dead', 0)
+    this.alive = false
 
     this.game.entityManager.checkWinLoseCondition()
 
     attackTween.onComplete.add(() => {
       this.sprite.alpha = 0
       this.lifeBar.kill()
+      this.idle()
       this.game.particleManager.burst(
         this.sprite.x, this.sprite.y, 0, 1.5, 1500
       )
@@ -277,7 +300,7 @@ export default class Entity {
     if (this.type === 'enemy') {
       modifier = this.game.waveNum/10
       this.job = this.game.rnd.integerInRange(0, 2)
-      this.sprite.loadTexture(`${this.type}-${jobNames[this.job]}-idle`)
+      this.sprite.loadTexture(`${this.type}-${jobNames[this.job]}`)
     }
     this.maxLife = baseStats[this.job].hp * modifier
     this.life = this.maxLife

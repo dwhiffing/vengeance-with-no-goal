@@ -1,4 +1,3 @@
-add pulse tween
 add counter ability
   move sword infront of target
   use defend animation
@@ -17,14 +16,7 @@ allow selecting of player at beginning of each turn?
 allow cancel?
 move lifebar into group with entity and move group around instead
 
-implement sprite sheets and attack animations
-  idle
-  attack
-  hit
-  dead
-  defend
-
-  make window for defense bigger
+make window for defense bigger
 improve tweens and refactor them
 enemies should fight in predictable way
   predetermined waves that increase in difficult
@@ -39,6 +31,7 @@ fix background to have enough space for mobile buttons
 
 less green on red enemy?
 less blue on green player?
+add tweens for life text going up/down
 
 balancing
 

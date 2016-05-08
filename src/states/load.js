@@ -18,12 +18,12 @@ export default {
     this.load.image('bg', 'images/bg.png')
     this.load.spritesheet('bar', 'images/bar.png', 150, 20);
 
-    this.load.spritesheet('player-axe-idle', 'images/player-melee-idle.png', 200, 200)
-    this.load.spritesheet('player-sword-idle', 'images/player-sword-idle.png', 200, 200)
-    this.load.spritesheet('player-bow-idle', 'images/player-bow-idle.png', 200, 200)
-    this.load.spritesheet('enemy-axe-idle', 'images/enemy-melee-idle.png', 200, 200)
-    this.load.spritesheet('enemy-sword-idle', 'images/enemy-sword-idle.png', 200, 200)
-    this.load.spritesheet('enemy-bow-idle', 'images/enemy-bow-idle.png', 200, 200)
+    this.load.spritesheet('player-melee', 'images/player-melee.png', 200, 200)
+    this.load.spritesheet('player-sword', 'images/player-sword.png', 200, 200)
+    this.load.spritesheet('player-bow', 'images/player-bow.png', 200, 200)
+    this.load.spritesheet('enemy-melee', 'images/enemy-melee.png', 200, 200)
+    this.load.spritesheet('enemy-sword', 'images/enemy-sword.png', 200, 200)
+    this.load.spritesheet('enemy-bow', 'images/enemy-bow.png', 200, 200)
   },
 
   onLoadComplete() {
