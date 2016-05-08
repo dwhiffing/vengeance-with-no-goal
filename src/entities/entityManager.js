@@ -5,7 +5,7 @@ let playerCount = [0,1,2]
 let enemyCount = [0,1,2,3,4]
 
 let xBuffer = 150
-let yBuffer = 100
+let yBuffer = 150
 let enemyXBuffer = 130
 let enemyYBuffer = 100
 
@@ -75,25 +75,20 @@ export default class EntityManager {
   checkWinLoseCondition() {
     let alivePlayers = players.filter(p => !!p.alive)
     let aliveEnemies = enemies.filter(p => !!p.alive)
-    if (alivePlayers.length === 0) {
-      this.turnIndex = -1
-      this.game.textManager.display('Game over...')
-      this.game.ui.toggleActionMenu(false)
-    }
-    if (aliveEnemies.length === 0) {
-      this.game.ui.toggleActionMenu(false)
-      this.turnIndex = -1
-      this.game.textManager.display('You win!')
+    if (alivePlayers.length === 0 || aliveEnemies.length === 0) {
+      return true
     }
   }
-
   triggerWinLoseCondition() {
     let alivePlayers = players.filter(p => !!p.alive)
     let aliveEnemies = enemies.filter(p => !!p.alive)
+    this.game.ui.toggleActionMenu(false)
     if (alivePlayers.length === 0) {
+      this.game.textManager.display('Game over...')
       setTimeout(this.triggerGameOver.bind(this), 1500)
     }
     if (aliveEnemies.length === 0) {
+      this.game.textManager.display('You win!')
       setTimeout(this.nextWave.bind(this), 1500)
     }
   }
@@ -129,6 +124,7 @@ export default class EntityManager {
     })
 
     setTimeout(() => {
+      this.turnIndex = -1
       this.game.ui.allowAction = false
       this.game.ui.toggleActionMenu(true)
       this.game.textManager.clear
@@ -152,7 +148,10 @@ export default class EntityManager {
   _nextTurn() {
     const nextToMove = this._getUnitForNextTurn()
 
-    // TODO: determine whose turn it is in a better way
+    if (this.checkWinLoseCondition()) {
+      return
+    }
+
     this.game.turn = this.turnIndex > 2 ? 'enemy' : 'player'
 
     if (this.game.turn === 'player') {

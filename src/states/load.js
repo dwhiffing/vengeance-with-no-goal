@@ -11,6 +11,10 @@ export default {
 
     this.load.image('bit', 'images/bit.png')
     this.load.image('ball', 'images/ball.png')
+    this.load.image('select', 'images/select.png')
+    this.load.image('attack-icon', 'images/attack-icon.png')
+    this.load.image('counter-icon', 'images/counter-icon.png')
+    this.load.image('assist-icon', 'images/assist-icon.png')
     this.load.image('bg', 'images/bg.png')
     this.load.spritesheet('bar', 'images/bar.png', 150, 20);
 

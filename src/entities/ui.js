@@ -1,8 +1,7 @@
 
 class Dot {
-  constructor(game, group, x, y, tint) {
-    this.sprite = game.add.sprite(x, y, 'ball')
-    this.sprite.tint = tint
+  constructor(game, group, x, y, key) {
+    this.sprite = game.add.sprite(x, y, key)
     this.sprite.anchor.x = 0.5
     if (group) {
       group.add(this.sprite)
@@ -11,7 +10,7 @@ class Dot {
 }
 
 let actions = ['attack', 'defend', 'relic']
-let buffer = 50, uiMode
+let buffer = 60, uiMode
 let entities, enemies, players
 let actionGroup, actionDot, actionIndex, attackDot, attackIndex
 let attack, defend, relic
@@ -34,22 +33,25 @@ export default class UserInterface {
     actionGroup = game.add.group()
     uiMode = 'action'
 
-    attack = new Dot(game, actionGroup, -buffer, 20, 0xff0000)
-    defend = new Dot(game, actionGroup, 0, 20, 0x0000ff)
-    relic = new Dot(game, actionGroup, buffer, 20, 0x00ff00)
+    attack = new Dot(game, actionGroup, -buffer, 20, 'attack-icon')
+    defend = new Dot(game, actionGroup, 0, 20, 'counter-icon')
+    relic = new Dot(game, actionGroup, buffer, 20, 'assist-icon')
 
     entities = this.game.entities
     enemies = this.game.enemies
     players = this.game.players
 
     actionIndex = 0
-    actionDot = new Dot(game, actionGroup, -buffer, 20, 0xffffff)
-    actionDot.sprite.alpha = 0.5
+    actionDot = new Dot(game, actionGroup, -buffer, 20, 'ball')
+    actionDot.sprite.alpha = 0.3
 
     attackIndex = 0
-    attackDot = new Dot(game, null, -buffer, 20, 0xffffff)
-    attackDot.sprite.scale.setTo(1.5)
+    attackDot = new Dot(game, null, -buffer, 20, 'select')
     attackDot.sprite.anchor.setTo(0.5)
+    let attackDotTween = this.game.add.tween(attackDot.sprite)
+      .to({ angle: 360 }, 10000)
+      .loop()
+      .start()
 
     this.setActionMenuPosition()
 
@@ -108,7 +110,7 @@ export default class UserInterface {
     }
     actionGroup.alpha = 1
     actionGroup.x = target.x
-    actionGroup.y = target.y - 100
+    actionGroup.y = target.y - 150
     attackDot.sprite.alpha = 0
     this.allowAction = true
     this.game.textManager.display(actions[actionIndex])

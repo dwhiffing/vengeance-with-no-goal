@@ -19,13 +19,13 @@ export default class ParticleManager {
       particle.tint = 0x999999
     })
   }
-  burst(x, y, direction=1, amount, lifespan, addScore) {
-    this.doBurst(burstEmitter, x, y, direction, amount, lifespan, addScore)
+  burst(x, y, direction=1, amount, lifespan) {
+    this.doBurst(burstEmitter, x, y, direction, amount, lifespan)
   }
-  block(x, y, direction=1, amount, lifespan, addScore) {
-    this.doBurst(blockEmitter, x, y, direction, amount, lifespan, addScore)
+  block(x, y, direction=1, amount, lifespan) {
+    this.doBurst(blockEmitter, x, y, direction, amount, lifespan)
   }
-  doBurst(emitter, x, y, direction, amount, lifespan=700, addScore) {
+  doBurst(emitter, x, y, direction, amount, lifespan=700) {
     emitter.x = x
     emitter.y = y
 
@@ -50,12 +50,6 @@ export default class ParticleManager {
 
     emitter.setYSpeed(-speed*0.5, -speed*1.3)
     emitter.start(true, lifespan, null, num)
-
-    if (addScore) {
-      setTimeout(() => {
-        this.game.textManager.addScore(num)
-      }, lifespan)
-    }
   }
   update() {
     burstEmitter.forEachAlive((p) => {

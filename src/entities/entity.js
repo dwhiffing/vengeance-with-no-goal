@@ -27,7 +27,7 @@ export default class Entity {
 
   constructor(game, x, y, type, job) {
     this.sprite = game.add.sprite(x, y, `${type}-${jobNames[job]}-idle`)
-    this.sprite.anchor.setTo(0.5)
+    this.sprite.anchor.setTo(0.5, 0.7)
     this.x = this.sprite.x
     this.y = this.sprite.y
     ease = Phaser.Easing
@@ -46,19 +46,21 @@ export default class Entity {
     this.weakAgainst = this.job - 1 < 0 ? 2 : this.job - 1
 
     this.lifeBarWidth = this.sprite.width/4
-    let lifeBarY = this.sprite.y + this.sprite.height*0.2
+    let lifeBarY = this.sprite.y
     let lifeBarX = this.sprite.x-this.facing*60 - (this.type === 'player' ? 70 : 0)
 
+    if (this.type === 'player') {
+      lifeBarX -= this.job === 1 ? 20 : 0
+      lifeBarX -= this.job === 2 ? -40 : 0
+    }
+    
     this.lifeBar = new HealthText(game,
       lifeBarX, lifeBarY, this.life
     )
     this.updateLifeBar()
     this.heal()
 
-    if (this.type === 'player') {
-      lifeBarX -= this.job === 1 ? 20 : 0
-      lifeBarX -= this.job === 2 ? -20 : 0
-    } else {
+    if (this.type !== 'player') {
       this.alive = false
       this.sprite.alpha = 0
       this.lifeBar.kill()
@@ -168,14 +170,16 @@ export default class Entity {
     let particleAmount = effectiveness
     if (effectiveness < 1) {
       this.game.particleManager.block(
-        this.sprite.x, this.sprite.y, this.facing,
-        particleAmount, undefined, this.type === 'enemy'
+        this.sprite.x, this.sprite.y, this.facing, particleAmount
       )
     } else {
       this.game.particleManager.burst(
-        this.sprite.x, this.sprite.y, this.facing,
-        particleAmount, undefined, this.type === 'enemy'
+        this.sprite.x, this.sprite.y, this.facing, particleAmount
       )
+    }
+
+    if (this.type === 'enemy') {
+      this.game.textManager.addScore(damage)
     }
   }
 
@@ -250,8 +254,7 @@ export default class Entity {
       this.sprite.alpha = 0
       this.lifeBar.kill()
       this.game.particleManager.burst(
-        this.sprite.x, this.sprite.y,
-        0, 1.5, 3000, this.type === 'enemy'
+        this.sprite.x, this.sprite.y, 0, 1.5, 1500
       )
       this.game.entityManager.triggerWinLoseCondition()
     })
