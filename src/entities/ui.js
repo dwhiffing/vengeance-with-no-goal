@@ -151,6 +151,7 @@ export default class UserInterface {
       this.setAttackTarget()
     } else {
       uiMode = 'action'
+      this.hideTarget()
       this.game.doAction('attack', enemies[attackIndex])
     }
   }

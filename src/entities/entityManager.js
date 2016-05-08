@@ -81,9 +81,9 @@ export default class EntityManager {
       this.game.ui.toggleActionMenu(false)
     }
     if (aliveEnemies.length === 0) {
+      this.game.ui.toggleActionMenu(false)
       this.turnIndex = -1
       this.game.textManager.display('You win!')
-      this.game.ui.toggleActionMenu(false)
     }
   }
 
@@ -123,13 +123,17 @@ export default class EntityManager {
       if (waveSize <= index) return
       enemy.job = this.game.rnd.integerInRange(0,2)
       enemy.spawn()
-      this.game.ui.toggleActionMenu(true)
-      this.game.textManager.clear()
     })
     players.forEach((player) => {
       player.heal()
     })
-    setTimeout(this._nextTurn, 1000)
+
+    setTimeout(() => {
+      this.game.ui.allowAction = false
+      this.game.ui.toggleActionMenu(true)
+      this.game.textManager.clear
+      this._nextTurn()
+    }, 1500)
   }
 
   _getUnitForNextTurn() {

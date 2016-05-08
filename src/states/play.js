@@ -21,6 +21,7 @@ export default {
 
     this.game.entityManager.nextWave()
     this.game.ui.setAttackTarget()
+    this.game.ui.hideTarget()
 
     this.game.camera.bounds = null
     this._shakeWorldTime = 0
