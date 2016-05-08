@@ -51,7 +51,6 @@ export default class Entity {
     deadAnim = this.sprite.animations.add('dead', [5])
     defendAnim = this.sprite.animations.add('defend', [6])
 
-
     this.lifeBarWidth = this.sprite.width/4
     let lifeBarY = this.sprite.y
     let lifeBarX = this.sprite.x-this.facing*70 - (this.type === 'player' ? 70 : 0)
@@ -201,7 +200,7 @@ export default class Entity {
   }
 
   takeDamage(damage=0, effectiveness=1, isCritHit=false) {
-    this.game.textManager.floatText(this.x, this.y-20, damage, isCritHit)
+    this.game.textManager.floatText(this.x+(40*this.facing), this.y-50, damage, isCritHit)
     this.life -= damage
     if (this.life < 0) {
       this.alive = false

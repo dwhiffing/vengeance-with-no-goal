@@ -1,4 +1,4 @@
-let textObj, floatText, scoreText, targetScore, waveText
+let textObj, scoreText, targetScore, waveText
 let style = {
   font: "18px Arial",
   fill: "#fff",
@@ -25,11 +25,9 @@ export default class TextManager {
 
     scoreText = game.add.text(this.game.width - 130, 20, 'score: 0', style)
     waveText = game.add.text(this.game.width - 130, 50, 'wave: 0', style)
-    floatText = game.add.text(0, y, '', style)
-    floatText.setShadow(1, 1, 'rgba(0,0,0,1)', 1)
 
     textObj = game.add.text(0, y, '', style)
-    // textObj.setShadow(3, 3, 'rgba(0,0,0,0.5)', 2)
+    textObj.setShadow(3, 3, 'rgba(0,0,0,0.5)', 2)
     textObj.setTextBounds(0, 10, game.width, 10)
   }
 
@@ -62,23 +60,30 @@ export default class TextManager {
     })
     tween.start()
   }
-  floatText(x, y, val, crit) {
-    let fontSize = val
+  floatText(x, y, val, crit, color='#fff') {
+    let fontSize = 20
     if (fontSize < 20) fontSize = 20
+    let bold = ''
     if (crit) {
-      floatText.fontWeight = 'bold'
+      bold = 'bold '
       fontSize*=1.5
     }
-    Math.round(fontSize)
+    fontSize = Math.round(fontSize)
 
-    floatText.fontSize = fontSize
-    floatText.text = val
-    floatText.alpha = 1
-    floatText.x = x
-    floatText.y = y
+    let floatText = this.game.add.text(x, y, val, {
+      font: bold+fontSize+'px Arial',
+      fill: color,
+      boundsAlignH: "center",
+      boundsAlignV: "middle"
+    })
+    floatText.setShadow(1, 1, 'rgba(0,0,0,1)', 0)
+
     tween = this.game.add.tween(floatText)
-      .to({ y: y - 50, alpha: 0 }, 1000)
-      .start()
+      .to({ y: y - 100, alpha: 0 }, 2000)
+    tween.onComplete.add(() => {
+      floatText.kill()
+    })
+    tween.start()
   }
   clear() {
     this.display('')

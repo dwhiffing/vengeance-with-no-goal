@@ -1,6 +1,6 @@
 import Entity from './entity'
 
-let defenseTween
+let defenseTween, tintTween
 
 export default class Player extends Entity {
   constructor(game, x, y, job) {
@@ -20,6 +20,7 @@ export default class Player extends Entity {
       this.isDefending = false
       this.isAssisting = false
       this.isAssisted = false
+      this.sprite.tint = 0xffffff
       this.sprite.animations.play('idle')
       this.game.players[0].sprite.z = 0
       this.game.players[1].sprite.z = 1
@@ -39,8 +40,10 @@ export default class Player extends Entity {
     if (action === 'heal') {
       // needs animation for healing
       defenseTween = this.game.add.tween(this.sprite.scale)
-        .to({ x: 0.85 }, 200)
+        .to({ x: 0.85, y: 1.5 }, 250)
         .yoyo(true)
+      this.sprite.tint = 0x3333dd
+      setTimeout(() => this.sprite.tint = 0xffffff, 500)
       defenseTween.onComplete.add(() => {
         target.heal(this.game.rnd.integerInRange(20, 30))
       })
@@ -50,6 +53,7 @@ export default class Player extends Entity {
       this.assistTarget = target
       this.sprite.animations.play('defend')
       this.sprite.z = 10
+      this.sprite.tint = 0x3333dd
 
       defenseTween = this.game.add.tween(this.sprite)
         .to({
@@ -64,6 +68,7 @@ export default class Player extends Entity {
       this.assistTarget = target
       this.sprite.animations.play('defend')
       this.sprite.z = 10
+      this.sprite.tint = 0x3333dd
 
       defenseTween = this.game.add.tween(this.sprite)
         .to({
@@ -85,8 +90,13 @@ export default class Player extends Entity {
     }
     this.updateLifeBar()
     defenseTween = this.game.add.tween(this.sprite.scale)
-      .to({ x: 0.5 }, 200)
+      .to({ x: 0.5, y: 1.5 }, 250)
       .yoyo(true)
     defenseTween.start()
+
+    this.game.textManager.floatText(this.sprite.x+30, this.sprite.y-50, value, false, '#0f0')
+    let lastTint = this.sprite.tint
+    this.sprite.tint = 0x00ff00
+    setTimeout(() => this.sprite.tint = lastTint, 500)
   }
 }
