@@ -10,12 +10,15 @@ class Dot {
   }
 }
 
-let actions = ['attack', 'defend', 'relic']
 let buffer = 60, uiMode
-let entities, enemies, players
-let actionGroup, actionDot, actionIndex, attackDot, attackIndex
-let attack, defend, relic
+let entities, enemies, players, targetting
+let actionGroup, actionDot, actionIndex, targetDot, targetIndex
+let attack, defend, assistButton
 let leftKey, rightKey, upKey, downKey, spaceKey
+
+let actions = ['attack', 'defend']
+let buttons
+let assist = ['boost', 'protect', 'heal']
 
 const loop = (val, min, max) => {
   if (val < min) {
@@ -36,26 +39,19 @@ export default class UserInterface {
 
     attack = new Dot(game, actionGroup, -buffer, 20, 'attack-icon')
     defend = new Dot(game, actionGroup, 0, 20, 'counter-icon')
-    relic = new Dot(game, actionGroup, buffer, 20, 'assist-icon')
+    assistButton = new Dot(game, actionGroup, buffer, 20, 'assist-icon')
+    buttons = [attack, defend, assistButton]
 
     entities = this.game.entities
     enemies = this.game.enemies
     players = this.game.players
+    targetting = enemies
 
     actionIndex = 0
-    actionDot = new Dot(game, actionGroup, -buffer, 20, 'select')
-    actionDot.sprite.alpha = 0.5
-    actionDot.sprite.width = 60
-    actionDot.sprite.height = 60
-    let actionDotTween = this.game.add.tween(actionDot.sprite)
-      .to({ angle: 360 }, 10000)
-      .loop()
-      .start()
-
-    attackIndex = 0
-    attackDot = new Dot(game, null, -buffer, 20, 'select')
-    attackDot.sprite.anchor.setTo(0.5)
-    let attackDotTween = this.game.add.tween(attackDot.sprite)
+    targetIndex = 0
+    targetDot = new Dot(game, null, -buffer, 20, 'select')
+    targetDot.sprite.anchor.setTo(0.5)
+    let targetDotTween = this.game.add.tween(targetDot.sprite)
       .to({ angle: 360 }, 10000)
       .loop()
       .start()
@@ -70,10 +66,9 @@ export default class UserInterface {
 
     leftKey.onDown.add(this.move.bind(this, -1))
     rightKey.onDown.add(this.move.bind(this, 1))
+    upKey.onDown.add(this.move.bind(this, 1))
+    downKey.onDown.add(this.move.bind(this, -1))
     spaceKey.onDown.add(this.hitSpace.bind(this))
-  }
-
-  update() {
   }
 
   hitSpace() {
@@ -85,26 +80,35 @@ export default class UserInterface {
   move(amount) {
     uiMode === 'action' ?
       this.moveActionIndex(amount) :
-      this.moveAttackIndex(amount)
+      this.moveTargetIndex(amount)
   }
 
   moveActionIndex(amount) {
     actionIndex += amount
     actionIndex = loop(actionIndex, 0, 2)
-    actionDot.sprite.x = actionIndex * buffer - buffer
-    this.game.textManager.display(actions[actionIndex])
+    buttons.forEach(b => b.sprite.scale.setTo(1))
+    buttons[actionIndex].sprite.scale.setTo(1.2)
+    this.game.textManager.display(this.getActionName())
   }
 
-  moveAttackIndex(amount) {
+  getActionName() {
+    if (actionIndex === 2) {
+      return assist[this.game.nextToMove.job]
+    }
+    return actions[actionIndex]
+  }
+
+  moveTargetIndex(amount) {
     let target
     do {
-      attackIndex += amount
-      attackIndex = loop(attackIndex, 0, enemies.length - 1)
-      target = enemies[attackIndex]
-    } while (!target.alive)
+      targetIndex += amount
+      targetIndex = loop(targetIndex, 0, targetting.length - 1)
+      target = targetting[targetIndex]
+      target = target === this.game.nextToMove && target.job !== 2 ? null : target
+    } while (!target || !target.alive)
 
-    attackDot.sprite.x = target.sprite.x
-    attackDot.sprite.y = target.sprite.y
+    targetDot.sprite.x = target.sprite.x
+    targetDot.sprite.y = target.sprite.y
 
     this.game.textManager.display(`attack ${target.jobName} enemy`)
   }
@@ -117,32 +121,25 @@ export default class UserInterface {
     }
     actionGroup.alpha = 1
     actionGroup.x = target.x
-    actionGroup.y = target.y - 110
-    attackDot.sprite.alpha = 0
+    actionGroup.y = target.y - 120
+    targetDot.sprite.alpha = 0
     this.allowAction = true
-    this.game.textManager.display(actions[actionIndex])
+    this.game.textManager.display(this.getActionName())
   }
 
-  setAttackTarget(target, tint=0xffffff) {
-    if (!target) {
-      attackIndex = 1
-      this.moveAttackIndex(-1)
-      target = enemies[attackIndex]
-    }
+  setTarget() {
+    targetIndex = 1
+    this.moveTargetIndex(-1)
+    let target = targetting[targetIndex]
     actionGroup.alpha = 0
     this.allowAction = true
-    this.setSprite(attackDot, target.sprite.x, target.sprite.y, tint, 0.3)
-  }
-
-  setSprite(thing, x, y, tint, alpha) {
-    thing.sprite.x = x
-    thing.sprite.y = y
-    thing.sprite.tint = tint
-    thing.sprite.alpha = alpha
+    targetDot.sprite.x = target.sprite.x
+    targetDot.sprite.y = target.sprite.y
+    targetDot.sprite.alpha = 0.5
   }
 
   hideTarget() {
-    attackDot.sprite.alpha = 0
+    targetDot.sprite.alpha = 0
   }
 
   toggleActionMenu(thing=0) {
@@ -153,15 +150,16 @@ export default class UserInterface {
     }
   }
 
-  toggleAttackMode() {
+  toggleTargetMode(type='attack') {
     if (uiMode === 'action') {
       uiMode = 'target'
       // move attack target to first targettable enemy
-      this.setAttackTarget()
+      targetting = type === 'attack' ? enemies : players
+      this.setTarget()
     } else {
       uiMode = 'action'
       this.hideTarget()
-      this.game.doAction('attack', enemies[attackIndex])
+      this.game.doAction(type, targetting[targetIndex])
     }
   }
 
@@ -170,13 +168,14 @@ export default class UserInterface {
     switch (actionIndex) {
       case 0:
         this.allowAction = false
-        this.toggleAttackMode()
-        break
-      case 1:
-        this.game.doAction('defend')
+        this.toggleTargetMode()
         break
       case 2:
-        this.game.doAction('relic')
+        this.allowAction = false
+        this.toggleTargetMode(this.getActionName())
+        break
+      default:
+        this.game.doAction(this.getActionName())
         break
     }
   }

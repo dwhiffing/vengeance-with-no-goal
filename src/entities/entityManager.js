@@ -5,10 +5,10 @@ let playerCount = [0,1,2]
 let enemyCount = [0,1,2,3,4]
 
 let xBuffer = 150
-let yBuffer = 170
-let enemyXBuffer = 130
+let yBuffer = 150
+let enemyXBuffer = 120
 let playerYBuffer = 80
-let enemyYBuffer = 110
+let enemyYBuffer = 100
 
 let entities, enemies, players
 
@@ -54,12 +54,14 @@ export default class EntityManager {
   doAction(action, target) {
     let current = this.game.entities[this.turnIndex]
     if (!current) return
+    this.game.ui.toggleActionMenu(false)
     switch (action) {
       case 'timing': {
         current.timingAttackTrigger && current.timingAttackTrigger()
         break
       }
       case 'attack': {
+
         current.attack(target, this._nextTurn)
         break
       }
@@ -67,7 +69,8 @@ export default class EntityManager {
         current.defend(this._nextTurn)
         break
       }
-      case 'relic': {
+      case 'boost': case 'heal': case 'protect': {
+        current.pickPlayer(target, action, this._nextTurn)
         break
       }
     }
@@ -113,6 +116,7 @@ export default class EntityManager {
   nextWave() {
     this.game.ui.allowAction = true
     this.game.waveNum++
+    this.game.textManager.updateWave(this.game.waveNum)
     let waveSize = this.getWaveSize()
 
     enemies.forEach((enemy, index) => {
@@ -120,9 +124,9 @@ export default class EntityManager {
       enemy.job = this.game.rnd.integerInRange(0,2)
       enemy.spawn()
     })
-    players.forEach((player) => {
-      player.heal()
-    })
+    // players.forEach((player) => {
+    //   player.heal()
+    // })
 
     setTimeout(() => {
       this.turnIndex = -1
@@ -147,7 +151,7 @@ export default class EntityManager {
   }
 
   _nextTurn() {
-    const nextToMove = this._getUnitForNextTurn()
+    this.game.nextToMove = this._getUnitForNextTurn()
 
     if (this.checkWinLoseCondition()) {
       return
@@ -156,17 +160,17 @@ export default class EntityManager {
     this.game.turn = this.turnIndex > 2 ? 'enemy' : 'player'
 
     if (this.game.turn === 'player') {
-      this._performPlayerMove(nextToMove)
+      this._performPlayerMove(this.game.nextToMove)
     } else {
       this.game.ui.hideTarget()
       this.game.textManager.clear()
-      setTimeout(this._performEnemyMove.bind(this, nextToMove), 500)
+      setTimeout(this._performEnemyMove.bind(this, this.game.nextToMove), 500)
     }
   }
 
   _performPlayerMove(player) {
     this.game.ui.setActionMenuPosition(player)
-    player.stopDefending()
+    player.stopDefendingOrAssisting()
   }
 
   _performEnemyMove(enemy) {

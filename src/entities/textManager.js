@@ -1,4 +1,4 @@
-let textObj, floatText, scoreText, targetScore
+let textObj, floatText, scoreText, targetScore, waveText
 let style = {
   font: "18px Arial",
   fill: "#fff",
@@ -7,9 +7,11 @@ let style = {
 }
 
 let messages = {
-  attack: 'attack target enemy',
-  defend: 'defend against attacks',
-  relic: 'use relic on target',
+  attack: 'attack a targetted enemy',
+  defend: 'enter defensive posture, swapping your strengths and weaknesses',
+  heal: 'restore a targetted ally\'s health',
+  boost: 'attack with an ally to boost their effectiveness',
+  protect: 'protect a targetted ally from any attack',
 }
 
 let tween, tween2
@@ -21,7 +23,8 @@ export default class TextManager {
 
     targetScore = 0
 
-    scoreText = game.add.text(20, 20, 'score: 0', style)
+    scoreText = game.add.text(this.game.width - 130, 20, 'score: 0', style)
+    waveText = game.add.text(this.game.width - 130, 50, 'wave: 0', style)
     floatText = game.add.text(0, y, '', style)
     floatText.setShadow(1, 1, 'rgba(0,0,0,1)', 1)
 
@@ -32,6 +35,10 @@ export default class TextManager {
 
   addScore(score) {
     targetScore += score
+  }
+
+  updateWave(amount) {
+    waveText.text = `wave: ${amount}`
   }
 
   update() {

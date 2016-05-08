@@ -10,20 +10,57 @@ export default class Player extends Entity {
   defend(callback) {
     this.isDefending = true
     defenseTween = this.game.add.tween(this.sprite.scale)
-      .to({
-        y: 0.5,
-      }, 200)
+      .to({ y: 0.85 }, 200)
     defenseTween.start()
     callback()
   }
 
-  stopDefending() {
-    this.isDefending = false
+  stopDefendingOrAssisting() {
+    let opts = {}
+    if (this.isDefending) {
+      this.isDefending = false
+      opts = { y: 1}
+    } else if (this.isAssisting) {
+      opts = { x: 1}
+      this.isAssisting = false
+    }
     defenseTween = this.game.add.tween(this.sprite.scale)
-      .to({ y: 1 }, 200)
-    defenseTween.start()
+      .to(opts, 200)
+      .start()
   }
 
-  relic() {
+  pickPlayer(target, action, callback) {
+    this.isAssisting = true
+
+    if (action === 'heal') {
+      // needs animation for healing
+      defenseTween = this.game.add.tween(this.sprite.scale)
+        .to({ x: 0.85 }, 200)
+        .yoyo(true)
+      defenseTween.onComplete.add(() => {
+        target.heal(this.game.rnd.integerInRange(20, 30))
+      })
+      defenseTween.start()
+    } else if (action === 'boost') {
+      defenseTween = this.game.add.tween(this.sprite.scale)
+        .to({ x: 0.85 }, 200)
+      defenseTween.start()
+    } else if (action === 'protect') {
+      defenseTween = this.game.add.tween(this.sprite.scale)
+        .to({ x: 0.85 }, 200)
+      defenseTween.start()
+    }
+    callback()
+  }
+  heal(value) {
+    this.life += this.maxLife * (value/100)
+    if (this.life > this.maxLife) {
+      this.life = this.maxLife
+    }
+    this.updateLifeBar()
+    defenseTween = this.game.add.tween(this.sprite.scale)
+      .to({ x: 0.5 }, 200)
+      .yoyo(true)
+    defenseTween.start()
   }
 }

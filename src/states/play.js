@@ -20,7 +20,7 @@ export default {
     this.game.particleManager = new ParticleManager(game)
 
     this.game.entityManager.nextWave()
-    this.game.ui.setAttackTarget()
+    this.game.ui.setTarget()
     this.game.ui.hideTarget()
     this.game.ui.allowAction = false
 
