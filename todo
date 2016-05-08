@@ -1,21 +1,10 @@
 BUG: fix assisting moving sprite over after moving back
+BUG: countering breaks position of all enemies
 
-parry sound is annoying
-after each fight restore health by 25%
-players dont explode after death
-make buttons bigger when selected, potential overlay?
-highlight currently active player
 allow going back in ui
-make heal by 50%
-dont allow assisting if other players are dead
-entities dont switch to death animation if defending
-when using protect ability, take 1 effectiveness damage
-sometimes you can take decimal damage
-add spacebar for titlescreen to start playing
-add button for credits
+
 music not working in safari, maybe because ogg?
-reset action index to 0 at start of player turn
-damage done by enemies should be proportional to health
+parry sound is annoying?
 
 add mobile controls
   arrows on left, select on right

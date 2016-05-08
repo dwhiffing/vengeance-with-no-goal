@@ -2,8 +2,8 @@ import HealthText from '../entities/text'
 
 let sprites = ['ball', 'square', 'triangle']
 let spriteNames = ['sword', 'melee', 'bow']
-let jobNames = ['Elise', 'Tiny', 'Pexom']
-let jobNamesEnemy = ['Batsworth', 'Rit-Rat', 'Flan']
+let jobNames = ['Papier', 'Rok', 'Sizzorix']
+let jobNamesEnemy = ['P-Wing', 'Rit-Rat', 'Slippy']
 let jobColors = [0x22dd22, 0xdd0000, 0x4422dd]
 let baseStats = [
   {
@@ -60,7 +60,6 @@ export default class Entity {
     }
     let lifeBarX = this.sprite.x-this.facing*70 - this.lifebarSpacing
 
-
     this.lifeBar = new HealthText(game,
       lifeBarX, lifeBarY, this.life
     )
@@ -97,7 +96,7 @@ export default class Entity {
     this.alreadyTriggered = false
     this.inTimingWindow = false
 
-    const timing = this.type === 'player' ? 1500 : 1500
+    const timing = this.type === 'player' ? 1500 : 800
     let jumpDist = 20
 
     let dist
@@ -148,7 +147,7 @@ export default class Entity {
     })
     attackTween.start()
 
-    let damage = this.power
+    let damage = this.type === 'enemy' ? this.power * (this.life/this.maxLife) : this.power
 
     setTimeout(() => {
       this.inTimingWindow = true
@@ -172,7 +171,7 @@ export default class Entity {
         target.getHit(damage, 0.75, this.timingAttackTriggered)
       } else if (melee.isAssisting && melee.assistTarget === target && this.type === 'enemy') {
         // this should respect effectiveness rules for melee insetad
-        melee.getHit(damage, 1, this.timingAttackTriggered)
+        melee.getHit(damage, 0.75, this.timingAttackTriggered)
       } else {
         target.getHit(damage, effectiveness, this.timingAttackTriggered)
       }
@@ -182,7 +181,7 @@ export default class Entity {
   takeDamage(damage=0, effectiveness=1, isCritHit=false) {
     let spacing = this.type === 'player' ? 60 : 80
     this.game.textManager.floatText(this.sprite.x-((spacing+this.lifebarSpacing)*this.facing), this.y-50, damage, isCritHit)
-    this.life -= damage
+    this.life -= Math.round(damage)
     if (this.life < 0) {
       this.game.deathSound.play()
       this.alive = false
@@ -210,7 +209,7 @@ export default class Entity {
   getHit(damage, effectiveness, timingAttackTriggered) {
     let critMulti = 1
     if (timingAttackTriggered) {
-      critMulti = this.type === 'enemy' ? 2 : 0.5
+      critMulti = this.type === 'enemy' ? 2 : 0.2
     }
     effectiveness *= critMulti
 
@@ -276,27 +275,29 @@ export default class Entity {
   }
 
   kill() {
+    let alpha = this.type === 'enemy' ? 0.2 : 1
     attackTween = this.game.add.tween(this.sprite)
-      .to({
-        alpha: 0.2,
-      }, 800, Phaser.Easing.Quadratic.Out)
-    this.sprite.animations.play('dead', 0)
-    this.alive = false
+      .to({ alpha }, 800, Phaser.Easing.Quadratic.Out)
     this.stopDefendingOrAssisting && this.stopDefendingOrAssisting()
+    
+    this.sprite.animations.play('dead')
+    this.alive = false
 
     this.game.entityManager.checkWinLoseCondition()
-
     attackTween.onComplete.add(() => {
-      this.sprite.alpha = 0
-      this.lifeBar.kill()
-      this.sprite.animations.play('idle', 1, true)
-      this.game.killSound.play()
-      this.game.particleManager.burst(
-        this.sprite.x, this.sprite.y, 0, 1.5, 1500
-      )
+      if (this.type === 'enemy') {
+        this.sprite.alpha = 0
+        this.lifeBar.kill()
+        this.sprite.animations.play('idle', 1, true)
+        this.game.killSound.play()
+        this.game.particleManager.burst(
+          this.sprite.x, this.sprite.y, 0, 1.5, 1500
+        )
+      } else {
+        pulseTween.stop()
+      }
       this.game.entityManager.triggerWinLoseCondition()
     })
-
     attackTween.start()
   }
 
@@ -317,9 +318,9 @@ export default class Entity {
     this.life = this.maxLife
   }
 
-  revive() {
+  revive(amount = 1) {
     this.alive = true
-    this.life = this.maxLife
+    this.life = this.maxLife * amount
     this.updateLifeBar()
     this.lifeBar.spawn()
     this.game.reviveSound.play()

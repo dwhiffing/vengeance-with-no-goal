@@ -14,7 +14,7 @@ let buffer = 60, uiMode
 let entities, enemies, players, targetting
 let actionGroup, actionDot, actionIndex, targetDot, targetIndex
 let attack, defend, assistButton, allowAssist
-let leftKey, rightKey, upKey, downKey, spaceKey
+let leftKey, rightKey, upKey, downKey, spaceKey, escKey
 
 let actions = ['attack', 'defend']
 let buttons
@@ -56,25 +56,33 @@ export default class UserInterface {
       .loop()
       .start()
 
-    this.setActionMenuPosition()
-
     leftKey = game.input.keyboard.addKey(Phaser.Keyboard.LEFT)
     rightKey = game.input.keyboard.addKey(Phaser.Keyboard.RIGHT)
     upKey = game.input.keyboard.addKey(Phaser.Keyboard.UP)
     downKey = game.input.keyboard.addKey(Phaser.Keyboard.DOWN)
     spaceKey = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR)
+    escKey = game.input.keyboard.addKey(Phaser.Keyboard.ESC)
 
     leftKey.onDown.add(this.move.bind(this, -1))
     rightKey.onDown.add(this.move.bind(this, 1))
     upKey.onDown.add(this.move.bind(this, 1))
     downKey.onDown.add(this.move.bind(this, -1))
     spaceKey.onDown.add(this.hitSpace.bind(this))
+    escKey.onDown.add(this.hitEsc.bind(this))
   }
 
   hitSpace() {
     this.allowAction ?
       this.doSelectedAction() :
       this.game.doAction('timing')
+  }
+
+  hitEsc() {
+    if (uiMode === 'target') {
+      uiMode = 'action'
+      actionGroup.alpha = 1
+      this.hideTarget()
+    }
   }
 
   move(amount) {
@@ -87,8 +95,12 @@ export default class UserInterface {
   moveActionIndex(amount) {
     actionIndex += amount
     actionIndex = loop(actionIndex, 0, 2)
-    buttons.forEach(b => b.sprite.scale.setTo(1))
+    buttons.forEach(b =>{
+      b.sprite.scale.setTo(1)
+      b.sprite.tint = 0x555555
+    })
     buttons[actionIndex].sprite.scale.setTo(1.2)
+    buttons[actionIndex].sprite.tint = 0xffffff
     this.game.textManager.display(this.getActionName())
   }
 
@@ -133,22 +145,39 @@ export default class UserInterface {
       this.moveActionIndex(-1)
       target = players[actionIndex]
     }
+    actionIndex = 0
+    this.moveActionIndex(1)
+    this.moveActionIndex(-1)
+
     actionGroup.alpha = 1
     actionGroup.x = target.x
     actionGroup.y = target.y - 120
     targetDot.sprite.alpha = 0
 
-    allowAssist = true
     let melee = this.game.players[0]
     let sword = this.game.players[1]
+    let bow = this.game.players[2]
+
+    allowAssist = true
     if (
       (this.game.nextToMove === melee && sword.isAssisting) ||
-      (this.game.nextToMove === sword && melee.isAssisting)
+      (this.game.nextToMove === sword && melee.isAssisting) ||
+      (this.game.nextToMove === sword && !bow.alive && !melee.alive) ||
+      (this.game.nextToMove === melee && !bow.alive && !sword.alive)
     ) {
       allowAssist = false
     }
     assistButton.sprite.tint = allowAssist ? 0xffffff : 0x222222
     this.allowAction = true
+
+    buttons.forEach(b =>{
+      b.sprite.scale.setTo(1)
+      b.sprite.tint = 0x555555
+    })
+    buttons[0].sprite.tint = 0xffffff
+
+    this.game.players.forEach(p => p.sprite.tint = 0x666666)
+    target.sprite.tint = 0xffffff
     this.game.textManager.display(this.getActionName())
   }
 
@@ -175,7 +204,7 @@ export default class UserInterface {
     }
   }
 
-  toggleTargetMode(type='attack') {
+  toggleTargetMode(type='attack', undo) {
     if (uiMode === 'action') {
       uiMode = 'target'
       // move attack target to first targettable enemy

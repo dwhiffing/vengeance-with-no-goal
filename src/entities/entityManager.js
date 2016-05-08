@@ -148,7 +148,11 @@ export default class EntityManager {
       enemy.spawn()
     })
 
-    this.resetPlayers()
+    this.resetPlayers(true)
+    players.forEach((player) => {
+      player.heal(0.25, false)
+    })
+
     setTimeout(() => {
       this.turnIndex = -1
       this.game.ui.allowAction = false
@@ -158,9 +162,9 @@ export default class EntityManager {
     }, 1500)
   }
 
-  resetPlayers() {
+  resetPlayers(thing) {
     players.forEach((player) => {
-      player.reset()
+      player.reset(thing)
     })
   }
 
@@ -190,6 +194,7 @@ export default class EntityManager {
       this.resetPlayers()
     }
     if (lastTurn === 'player' && this.game.turn === 'enemy') {
+      this.game.players.forEach(p => p.sprite.tint = 0xffffff)
       this.game.ui.allowAction = false
     }
 

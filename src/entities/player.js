@@ -32,9 +32,16 @@ export default class Player extends Entity {
     }
   }
 
-  reset() {
+  reset(revive) {
     this.stopDefendingOrAssisting()
-    this.heal(this.maxLife*0.25, false)
+    if (revive && !this.alive) {
+      this.revive(0.25)
+    }
+  }
+
+  revive(amount) {
+    super.revive(amount)
+    this.idle()
   }
 
   pickPlayer(target, action, callback) {
@@ -46,7 +53,7 @@ export default class Player extends Entity {
       this.sprite.tint = 0x9999ff
       setTimeout(() => this.sprite.tint = 0xffffff, 500)
       defenseTween.onComplete.add(() => {
-        target.heal(this.game.rnd.integerInRange(20, 30))
+        target.heal(0.5)
         callback()
       })
       defenseTween.start()
@@ -86,15 +93,16 @@ export default class Player extends Entity {
     }, 20)
   }
 
-  heal(value, animate=true) {
-    if (this.life === this.maxLife) return
-    this.life += this.maxLife * (value/100)
+  heal(value=0.25, animate=true) {
+    if (this.life === this.maxLife || !this.alive) return
+    let amount = this.maxLife * value
+    this.life += amount
     if (this.life > this.maxLife) {
       this.life = this.maxLife
     }
     this.updateLifeBar(true)
 
-    this.game.textManager.floatText(this.sprite.x-((50+this.lifebarSpacing)*this.facing), this.y-50, value, false, '#0f0')
+    this.game.textManager.floatText(this.sprite.x-((50+this.lifebarSpacing)*this.facing), this.y-50, amount, false, '#0f0')
 
     let lastTint = this.sprite.tint
     this.game.healSound.play()

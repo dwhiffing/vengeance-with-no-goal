@@ -23,12 +23,22 @@ export default class TextManager {
 
     targetScore = 0
 
-    scoreText = game.add.text(this.game.width - 120, 10, 'score: 0', style)
-    waveText = game.add.text(this.game.width - 120, 40, 'wave: 0', style)
+    scoreText = game.add.text(this.game.width - 160, 5, 'score: 0', style)
+    waveText = game.add.text(this.game.width - 160, 30, 'wave: 0', style)
 
     textObj = game.add.text(0, y, '', style)
     textObj.setShadow(3, 3, 'rgba(0,0,0,0.5)', 2)
     textObj.setTextBounds(0, 10, game.width, 10)
+
+    game.fullscreenButton = game.add.button(game.width-40, 10, 'full', () => {
+      if (game.scale.isFullScreen) {
+        game.scale.stopFullScreen()
+      } else {
+        game.scale.startFullScreen(false)
+      }
+    })
+    game.fullscreenButton.width = 30
+    game.fullscreenButton.height = 32
   }
 
   addScore(score) {
