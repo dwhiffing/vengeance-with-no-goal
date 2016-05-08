@@ -23,6 +23,8 @@ enemies should fight in predictable way
   make game more about target choice by always having one of each early on
   then make it harder by diversifying waves
 different timings for every entity for attack and defense
+add sound effects
+  move select, pick select
 
 add rock to top right corner of bg to cover score / wave text
 fix background to have enough space for mobile buttons
@@ -43,6 +45,3 @@ add local high scores
 add online high scores
 add instructions?
 add transition between fights?
-add sound effects
-  move select, pick select
-add music

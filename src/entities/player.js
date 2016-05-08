@@ -28,7 +28,6 @@ export default class Player extends Entity {
   }
 
   pickPlayer(target, action, callback) {
-    this.isAssisting = true
 
     if (action === 'heal') {
       // needs animation for healing
@@ -40,16 +39,21 @@ export default class Player extends Entity {
       })
       defenseTween.start()
     } else if (action === 'boost') {
-      defenseTween = this.game.add.tween(this.sprite.scale)
-        .to({ x: 0.85 }, 200)
-      defenseTween.start()
+      this.assisting = true
+      this.sprite.animations.play('defend')
+      // defenseTween = this.game.add.tween(this.sprite.scale)
+      //   .to({ x: 0.85 }, 200)
+      //   .start()
     } else if (action === 'protect') {
-      defenseTween = this.game.add.tween(this.sprite.scale)
-        .to({ x: 0.85 }, 200)
-      defenseTween.start()
+      this.isAssisting = true
+      this.sprite.animations.play('defend')
+      // defenseTween = this.game.add.tween(this.sprite.scale)
+      //   .to({ x: 0.85 }, 200)
+      //   .start()
     }
     callback()
   }
+
   heal(value) {
     this.life += this.maxLife * (value/100)
     if (this.life > this.maxLife) {

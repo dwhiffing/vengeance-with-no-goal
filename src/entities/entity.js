@@ -133,7 +133,6 @@ export default class Entity {
         angle: 20 * this.facing * angle,
       }, timing, ease.Elastic.Out)
     attackTween.onComplete.add(() => {
-      this.idle(0)
       backTween = this.game.add.tween(this.sprite)
         .to({
           x: this.sprite.x - dist * this.facing,
@@ -141,7 +140,10 @@ export default class Entity {
         }, timing/6, ease.Quadratic.Out)
 
       // prevent player from attacking before tweens end
-      backTween.onComplete.add(callback)
+      backTween.onComplete.add(() => {
+        this.sprite.animations.play('idle', 0.5, true)
+        callback()
+      })
       backTween.start()
     })
     attackTween.start()
@@ -246,6 +248,9 @@ export default class Entity {
       angle = 2
     } else if (!this.isDefending){
       this.sprite.animations.play('hit')
+      setTimeout(() => {
+        this.sprite.animations.play('idle', 0.5, true)
+      }, 500)
     }
 
     if (isCritHit) {
@@ -264,8 +269,8 @@ export default class Entity {
     setTimeout(() => {
       if (this.life === 0) {
         this.kill()
-      } else if (!this.isDefending){
-        this.idle(0)
+      } else if (!this.isDefending || this.type === 'enemy'){
+        this.sprite.animations.play('idle', 0.5, true)
       }
     }, 500)
 
@@ -285,7 +290,7 @@ export default class Entity {
     attackTween.onComplete.add(() => {
       this.sprite.alpha = 0
       this.lifeBar.kill()
-      this.idle()
+      this.sprite.animations.play('idle', 0.5, true)
       this.game.particleManager.burst(
         this.sprite.x, this.sprite.y, 0, 1.5, 1500
       )
@@ -317,6 +322,7 @@ export default class Entity {
 
   spawn() {
     this.setStats()
+    this.sprite.animations.play('idle', 0.5, true)
     attackTween = this.game.add.tween(this.sprite.scale)
       .to({
         x: 1,
