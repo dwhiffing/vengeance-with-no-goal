@@ -25,10 +25,10 @@ export default {
     this.game.critHitSound = game.add.audio('crit')
 
     this.game.healSound = game.add.audio('heal')
-    this.game.deathSound = game.add.audio('death')
-    this.game.killSound = game.add.audio('kill')
+    this.game.deathSound = game.add.audio('death', 0.8)
+    this.game.killSound = game.add.audio('kill', 0.8)
 
-    this.game.reviveSound = game.add.audio('spawn')
+    this.game.reviveSound = game.add.audio('spawn', 2)
     this.game.gameoverSound = game.add.audio('gameover')
     this.game.parrySound = game.add.audio('parry', 0.5)
 

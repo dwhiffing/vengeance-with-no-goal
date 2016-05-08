@@ -188,7 +188,9 @@ export default class UserInterface {
 
   doSelectedAction() {
     if (!this.allowAction || this.game.turn === 'enemy') {
-      this.game.cancelSound.play()
+      if (this.game.turn !== 'enemy') {
+        this.game.cancelSound.play()
+      }
       return
     }
     this.game.confirmSound.play()

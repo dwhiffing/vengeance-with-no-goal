@@ -60,7 +60,7 @@ export default class EntityManager {
     this.game.ui.toggleActionMenu(false)
     switch (action) {
       case 'timing': {
-        current.timingAttackTrigger && current.timingAttackTrigger()
+        current.timingAttackTrigger()
         break
       }
       case 'attack': {
@@ -169,6 +169,9 @@ export default class EntityManager {
 
     if (lastTurn === 'enemy' && this.game.turn === 'player') {
       this.resetPlayers()
+    }
+    if (lastTurn === 'player' && this.game.turn === 'enemy') {
+      this.game.ui.allowAction = false
     }
 
     if (this.game.turn === 'player') {

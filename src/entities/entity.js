@@ -99,7 +99,7 @@ export default class Entity {
     this.alreadyTriggered = false
     this.inTimingWindow = false
 
-    const timing = this.type === 'player' ? 1500 : 1000
+    const timing = this.type === 'player' ? 1500 : 1500
     let jumpDist = 20
 
     let dist

@@ -46,6 +46,7 @@ export default class Player extends Entity {
       setTimeout(() => this.sprite.tint = 0xffffff, 500)
       defenseTween.onComplete.add(() => {
         target.heal(this.game.rnd.integerInRange(20, 30))
+        callback()
       })
       defenseTween.start()
     } else if (action === 'boost') {
@@ -60,7 +61,8 @@ export default class Player extends Entity {
           y: target.sprite.y,
           x: target.sprite.x + 100
         }, 200)
-        .start()
+        defenseTween.onComplete.add(callback)
+        defenseTween.start()
     } else if (action === 'protect') {
       this.isAssisting = true
       this.isDefending = true
@@ -75,12 +77,12 @@ export default class Player extends Entity {
           y: target.sprite.y,
           x: target.sprite.x + 100
         }, 200)
-        .start()
+      defenseTween.onComplete.add(callback)
+      defenseTween.start()
     }
     setTimeout(() => {
       this.game.entityManager.group.sort('z', Phaser.Group.SORT_ASCENDING)
     }, 20)
-    callback()
   }
 
   heal(value) {
