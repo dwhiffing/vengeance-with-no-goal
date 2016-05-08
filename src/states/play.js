@@ -13,6 +13,8 @@ export default {
     this.game.bg.scale.y = 0.5
 
     this.game.score = 0
+    this.game.music = this.game.add.audio('music')
+    this.game.music.play()
 
     this.game.entityManager = new EntityManager(game)
     this.game.textManager = new TextManager(game)
