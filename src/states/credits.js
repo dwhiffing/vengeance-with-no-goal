@@ -1,3 +1,4 @@
+let spaceKey
 let getStyle = (size, bold) => {
   return {
     font: `${bold ? 'bold ' : ''}${size}px Arial`,
@@ -28,9 +29,11 @@ export default {
     john.anchor.setTo(0.5)
     john2.anchor.setTo(0.5)
     startText.anchor.setTo(0.5)
-
-    game.input.onDown.add(() => {
+    spaceKey = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR)
+    let start = () => {
       game.state.start('menu', true, false)
-    })
+    }
+    spaceKey.onDown.add(start)
+    game.input.onDown.add(start)
   },
 }

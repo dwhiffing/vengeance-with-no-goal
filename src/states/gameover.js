@@ -5,6 +5,7 @@ let getStyle = (size, bold) => {
   }
 }
 let score = 0
+let spaceKey
 
 export default {
   init(args={}) {
@@ -26,8 +27,11 @@ export default {
     scoreText2.anchor.setTo(0.5)
     startText.anchor.setTo(0.5)
 
-    game.input.onDown.add(() => {
-      game.state.start('play', true, false)
-    })
+    spaceKey = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR)
+    let start = () => {
+      game.state.start('menu', true, false)
+    }
+    spaceKey.onDown.add(start)
+    game.input.onDown.add(start)
   },
 }

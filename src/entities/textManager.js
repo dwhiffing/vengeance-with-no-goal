@@ -30,7 +30,7 @@ export default class TextManager {
     textObj.setShadow(3, 3, 'rgba(0,0,0,0.5)', 2)
     textObj.setTextBounds(0, 10, game.width, 10)
 
-    game.fullscreenButton = game.add.button(game.width-40, 10, 'full', () => {
+    game.fullscreenButton = game.add.button(10, 10, 'full', () => {
       if (game.scale.isFullScreen) {
         game.scale.stopFullScreen()
       } else {

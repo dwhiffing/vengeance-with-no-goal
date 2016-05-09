@@ -15,6 +15,7 @@ export default {
     this.load.audio('death', 'audio/zerohealth.mp3')
     this.load.audio('kill', 'audio/zerohealthexplode.mp3')
     this.load.image('full', 'images/fullscreen.png')
+    this.load.image('title', 'images/title.png')
 
     this.load.audio('music', 'audio/battle-music.ogg')
 

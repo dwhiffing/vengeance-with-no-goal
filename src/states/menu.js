@@ -4,11 +4,12 @@ export default {
   create(game) {
     this.game = game
     game.stage.backgroundColor = '#000000'
-    this.titleText = game.add.text(this.game.world.centerX, this.game.world.centerY-50, "Vengeance With no Goal", { font: "bold 42px Arial", fill: "#fff" })
-    this.titleText.anchor.setTo(0.5)
-    this.startText = game.add.text(this.game.world.centerX, this.game.world.centerY+50, "Start", { font: "bold 32px Arial", fill: "#fff" })
+    let image = this.game.add.image(0,0,'title')
+    image.width = this.game.width
+    image.height = this.game.height
+    this.startText = game.add.text(70, this.game.height-55, "Start", { font: "bold 32px Arial", fill: "#fff" })
     this.startText.anchor.setTo(0.5)
-    this.creditsText = game.add.text(this.game.world.centerX, this.game.world.centerY+100, "Credits", { font: "28px Arial", fill: "#fff" })
+    this.creditsText = game.add.text(70, this.game.height-20, "Credits", { font: "28px Arial", fill: "#fff" })
     this.creditsText.anchor.setTo(0.5)
     this.index = 0
 
